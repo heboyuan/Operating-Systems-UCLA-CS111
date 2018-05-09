@@ -4,10 +4,6 @@ build:
 	gcc -Wall -Wextra -pthread -o lab2_add lab2_add.c
 	gcc -Wall -Wextra -pthread -o lab2_list lab2_list.c SortedList.c SortedList.h
 
-debug:
-	gcc -Wall -Wextra -pthread -o lab2_add lab2_add.c
-	gcc -Wall -Wextra -pthread -o lab2_list list_std.c SortedList.c SortedList.h 
-
 tests:
 	./test.sh
 
