@@ -41,7 +41,7 @@ void* runner(){
 		}else if(my_lock == 'c'){
 			long long old_val, new_val;
 			do{
-				if (opt_yield){
+				if (my_yield){
 					sched_yield();
 				}
 				old_val = my_counter;
@@ -63,7 +63,7 @@ void* runner(){
 		}else if(my_lock == 'c'){
 			long long old_val, new_val;
 			do{
-				if (opt_yield){
+				if (my_yield){
 					sched_yield();
 				}
 				old_val = my_counter;
