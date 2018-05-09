@@ -175,8 +175,8 @@ int main(int argc, char **argv){
 	}
 
 	int start_loc[num_threads];
-	for(i = 0, j = 0; i < num_threads; i++, j += num_iterations){
-		start_loc[i] = j;
+	for(i = 0; i < num_threads; i++){
+		start_loc[i] = i*num_iterations;
 	}
 
 	struct timespec s_time;
