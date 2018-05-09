@@ -159,7 +159,7 @@ int main(int argc, char **argv){
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
 
-	int i, j;
+	int i;
 	for(int i = 0; i < num_threads * num_iterations; i++){
 		char* temp_key = malloc(2 * sizeof(char));
 		temp_key[0] = 'a' + rand() % 26;
