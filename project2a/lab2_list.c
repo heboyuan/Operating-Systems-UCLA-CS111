@@ -64,12 +64,14 @@ void* runner(void* temp){
 			while(__sync_lock_test_and_set(&my_spin, 1));
 			len = SortedList_length(my_list);
 			__sync_lock_release(&my_spin);
+			break;
 		}
 		case 'm':
 		{
 			pthread_mutex_lock(&my_mutex);
 			len = SortedList_length(my_list);
 			pthread_mutex_unlock(&my_mutex);
+			break;
 		}
 
 	}
