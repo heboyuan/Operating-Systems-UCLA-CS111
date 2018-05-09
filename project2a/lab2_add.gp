@@ -1,4 +1,4 @@
-#! /usr/bin/gnuplot
+#! /usr/local/cs/bin/gnuplot
 #
 # purpose:
 #	 generate data reduction graphs for the multi-threaded add project
