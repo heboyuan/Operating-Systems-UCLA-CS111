@@ -114,7 +114,7 @@ set logscale x 2
 unset xrange
 set xrange [0.75:]
 set ylabel "Length-adjusted cost per operation(ns)"
-set logscale y
+set logscale y 10
 set output 'lab2_list-4.png'
 set key left top
 plot \
