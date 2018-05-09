@@ -1,0 +1,44 @@
+NAME: Boyuan He
+EMAIL: boyuan_heboyuan@live.com
+ID: 004791432
+
+Online tutorial and document reference
+http://web.cs.ucla.edu/classes/spring18/cs111/projects/fd_juggling.html
+https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html
+http://pubs.opengroup.org/onlinepubs/000095399/basedefs/fcntl.h.html
+
+
+
+the lab0.c includes
+#include <stdbool.h> -- provide bool type to use
+#include <stdio.h> -- C standard io
+#include <stdlib.h> -- C standard library
+#include <unistd.h> -- provide POSIX operating system API
+#include <getopt.h> -- provide get commandline option API
+#include <signal.h> -- provide register signal handler
+#include <fcntl.h> -- define requests and arguements used by other functions
+#include <errno.h> -- provide error message
+#include <string.h> -- provide string
+
+
+
+
+smoke check runs the following test and output success or failure
+
+normal test
+run the program without commandline arguement, check exit value of the program
+
+success input test
+run the program with --input=input.txt arguement, check exit value of the program
+
+success output test
+run the program with --output=output.txt arguement, check exit value of the program
+
+wrong input test
+run the program with --input=w_input.txt arguement (w_input.txt have no read permission), check exit value of the program
+
+wrong output test
+run the program with --output=w_output.txt arguement (w_output.txt have no write permission), check exit value of the program
+
+catch test
+run the program with --segfault --catch arguement, check exit value of the program
