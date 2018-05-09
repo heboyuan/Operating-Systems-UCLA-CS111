@@ -104,7 +104,7 @@ void handler(){
 	exit(2);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv){
 	srand(time(NULL));
 
 	static struct option long_option[] = {

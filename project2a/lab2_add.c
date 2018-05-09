@@ -8,7 +8,7 @@
 
 int num_threads = 1;
 int num_iterations = 1;
-int my_yield = false;
+int my_yield = 0;
 char my_lock = 'n';
 int my_spin = 0;
 long long my_counter = 0;
@@ -39,7 +39,7 @@ void* runner(){
 			do{
 				old_val = my_counter;
 				new_val = old_val + 1;
-			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val)
+			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
 		}
 	}
 	for(i = 0; i < num_iterations; i++){
@@ -63,7 +63,7 @@ void* runner(){
 	}
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv){
 	static struct option long_option[] = {
 		{"threads", required_argument, 0, 't'},
 		{"iterations", required_argument, 0, 'i'},
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 	int op;
 	while(1){
 		op = getopt_long(argc, argv, "i:t:ys:", long_option, NULL);
-		if(c == -1)
+		if(op == -1)
 			break;
 		switch(op){
 			case 't':
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 				num_iterations = atoi(optarg);
 				break;
 			case 'y':
-				my_yield = true;
+				my_yield = 1;
 				break;
 			case 's':
 				if(optarg[0] == 's'|| optarg[0] == 'm' || optarg[0] == 'c'){
@@ -125,8 +125,8 @@ int main(int argc, char *argv[]) {
 	clock_gettime(CLOCK_MONOTONIC, &e_time);
 
 	long long my_time = (e_time.tv_sec - s_time.tv_sec)*1000000000;
-	my_time += e_time.tv_nsec
-	my_time -= s_time.tv_nsec
+	my_time += e_time.tv_nsec;
+	my_time -= s_time.tv_nsec;
 
 	int my_ops = num_threads*num_iterations*2;
 	long long op_time = my_time/my_ops;
@@ -134,11 +134,11 @@ int main(int argc, char *argv[]) {
 	if(my_yield){
 		res_yield = "yield-"
 	}
-	char* res_lock;
+	char* res_lock = "";
 	if(my_lock == 'n'){
 		res_lock = "none";
 	}else{
-		strncat(res_lock, my_lock);
+		strcat(res_lock, my_lock);
 	}
 	printf("add-%s%s,%d,%d,%d,%lld,%lld,%lld\n", res_yield, res_lock, num_threads, num_iterations,
 			my_ops, my_time, op_time, my_counter);
