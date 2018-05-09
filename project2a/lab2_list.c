@@ -47,7 +47,7 @@ void* runner(void* temp){
 	}else if(my_lock == 'm'){
 		pthread_mutex_lock(&my_mutex);
 		len = SortedList_length(&my_list);
-		pthread_mutex_unlock(&my_mutex)
+		pthread_mutex_unlock(&my_mutex);
 	}
 	if(len < 0){
 		fprintf(stderr, "Error: list corruption\n");
@@ -55,7 +55,7 @@ void* runner(void* temp){
 		exit(2);
 	}
 
-	SortedListElement_t* temp_ele
+	SortedListElement_t* temp_ele;
 	for(i = my_start; i < my_start + num_iterations; i++){
 		if(my_lock == 'n'){
 			if(!(temp_ele = SortedList_lookup(&my_list, my_list_ele[i].key))){
@@ -81,7 +81,7 @@ void* runner(void* temp){
 				exit(2);
 			}
 			pthread_mutex_unlock(&my_mutex);
-		}else if(my_lock = 'm'){
+		}else if(my_lock == 'm'){
 			while(__sync_lock_test_and_set(&my_spin, 1));
 			if(!(temp_ele = SortedList_lookup(&my_list, my_list_ele[i].key))){
 				fprintf(stderr, "Error: list corruption and element disappear\n");
@@ -122,6 +122,7 @@ int main(int argc, char **argv){
 		if(op == -1){
 			break;
 		}
+		size_t i;
 		switch(op){
 			case 't':
 				num_threads = atoi(optarg);
@@ -130,7 +131,7 @@ int main(int argc, char **argv){
 				num_iterations = atoi(optarg);
 				break;
 			case 'y':
-				int i;
+				
 				for (i = 0; i < strlen(optarg); i++){
 					if(optarg[i] == 'i') {
 						opt_yield |= INSERT_YIELD;
@@ -188,7 +189,7 @@ int main(int argc, char **argv){
 
 	pthread_t my_threads[num_threads];
 
-	for(i= 0； i < num_threads; i++){
+	for(i= 0; i < num_threads; i++){
 		if (pthread_create(&my_threads[i], NULL, runner, (void *) &start_loc[i])) {
 			fprintf(stderr, "Error: cannot create threads\n");
 			free(my_list_ele);
