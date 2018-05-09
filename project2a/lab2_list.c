@@ -25,28 +25,28 @@ void* runner(void* temp){
 
 	for(i = my_start; i < my_start + num_iterations; i++){
 		if(my_lock == 'n'){
-			SortedList_insert(my_list, &my_list_ele[i]);
+			SortedList_insert(&my_list, &my_list_ele[i]);
 		}else if(my_lock == 's'){
 			while(__sync_lock_test_and_set(&my_spin, 1));
-			SortedList_insert(my_list, &my_list_ele[i]);
+			SortedList_insert(&my_list, &my_list_ele[i]);
 			__sync_lock_release(&my_spin);
 		}else if(my_lock == 'm'){
 			pthread_mutex_lock(&my_mutex);
-			SortedList_insert(my_list, &my_list_ele[i]);
+			SortedList_insert(&my_list, &my_list_ele[i]);
 			pthread_mutex_unlock(&my_mutex);
 		}
 	}
 
 	int len = 0;
 	if(my_lock == 'n'){
-		len = SortedList_length(my_list);
+		len = SortedList_length(&my_list);
 	}else if(my_lock == 's'){
 		while(__sync_lock_test_and_set(&my_spin, 1));
-		len = SortedList_length(my_list);
+		len = SortedList_length(&my_list);
 		__sync_lock_release(&my_spin);
 	}else if(my_lock == 'm'){
 		pthread_mutex_lock(&my_mutex);
-		len = SortedList_length(my_list);
+		len = SortedList_length(&my_list);
 		pthread_mutex_unlock(&my_mutex)
 	}
 	if(len < 0){
@@ -58,7 +58,7 @@ void* runner(void* temp){
 	SortedListElement_t* temp_ele
 	for(i = my_start; i < my_start + num_iterations; i++){
 		if(my_lock == 'n'){
-			if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+			if(!(temp_ele = SortedList_lookup(&my_list, my_list_ele[i].key))){
 				fprintf(stderr, "Error: list corruption and element disappear\n");
 				free(my_list_ele);
 				exit(2);
@@ -70,7 +70,7 @@ void* runner(void* temp){
 			}
 		}else if(my_lock == 's'){
 			pthread_mutex_lock(&my_mutex);
-			if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+			if(!(temp_ele = SortedList_lookup(&my_list, my_list_ele[i].key))){
 				fprintf(stderr, "Error: list corruption and element disappear\n");
 				free(my_list_ele);
 				exit(2);
@@ -83,7 +83,7 @@ void* runner(void* temp){
 			pthread_mutex_unlock(&my_mutex);
 		}else if(my_lock = 'm'){
 			while(__sync_lock_test_and_set(&my_spin, 1));
-			if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+			if(!(temp_ele = SortedList_lookup(&my_list, my_list_ele[i].key))){
 				fprintf(stderr, "Error: list corruption and element disappear\n");
 				free(my_list_ele);
 				exit(2);
