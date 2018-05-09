@@ -10,7 +10,7 @@ void SortedList_insert(SortedList_t *list, SortedListElement_t *element){
 		return;
 	}
 	SortedListElement_t* my_next = list->next;
-	while(strcmp(element->key, my_next->key) > 0 && my_next->key != NULL){
+	while(my_next->key != NULL && strcmp(element->key, my_next->key) > 0){
 		if(opt_yield & INSERT_YIELD){
 			sched_yield();
 		}
