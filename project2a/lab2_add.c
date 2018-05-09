@@ -58,7 +58,7 @@ void* runner(){
 			do{
 				old_val = my_counter;
 				new_val = old_val - 1;
-			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val)
+			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
 		}
 	}
 }
@@ -132,7 +132,7 @@ int main(int argc, char **argv){
 	long long op_time = my_time/my_ops;
 	char* res_yield = "";
 	if(my_yield){
-		res_yield = "yield-"
+		res_yield = "yield-";
 	}
 	char* res_lock = "";
 	if(my_lock == 'n'){
