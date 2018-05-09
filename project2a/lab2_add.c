@@ -8,7 +8,7 @@
 
 int num_threads = 1;
 int num_iterations = 1;
-int my_yield = 0;
+int opt_yield = 0;
 char my_lock = 'n';
 int my_spin = 0;
 long long my_counter = 0;
@@ -16,7 +16,7 @@ pthread_mutex_t my_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void add(long long *pointer, long long value){
     long long sum = *pointer + value;
-    if (my_yield)
+    if (opt_yield)
         sched_yield();
     *pointer = sum;
 }
@@ -41,7 +41,7 @@ void* runner(){
 		}else if(my_lock == 'c'){
 			long long old_val, new_val;
 			do{
-				if (my_yield){
+				if (opt_yield){
 					sched_yield();
 				}
 				old_val = my_counter;
@@ -53,9 +53,11 @@ void* runner(){
 		if(my_lock == 'n'){
 			add(&my_counter, -1);
 		}else if(my_lock == 's'){
-			while (__sync_lock_test_and_set(&my_spin, -1));
+
+			while (__sync_lock_test_and_set(&my_spin, 1));
 			add(&my_counter, -1);
 			__sync_lock_release(&my_spin);
+
 		}else if(my_lock == 'm'){
 			pthread_mutex_lock(&my_mutex);
 			add(&my_counter, -1);
@@ -63,7 +65,7 @@ void* runner(){
 		}else if(my_lock == 'c'){
 			long long old_val, new_val;
 			do{
-				if (my_yield){
+				if (opt_yield){
 					sched_yield();
 				}
 				old_val = my_counter;
@@ -96,7 +98,7 @@ int main(int argc, char **argv){
 				num_iterations = atoi(optarg);
 				break;
 			case 'y':
-				my_yield = 1;
+				opt_yield = 1;
 				break;
 			case 's':
 				if(optarg[0] == 's'|| optarg[0] == 'm' || optarg[0] == 'c'){
@@ -112,10 +114,10 @@ int main(int argc, char **argv){
 		}
 	}
 
+	pthread_t my_threads[num_threads];
+
 	struct timespec s_time;
 	clock_gettime(CLOCK_MONOTONIC, &s_time);
-
-	pthread_t my_threads[num_threads];
 
 	int i;
 	for(i = 0; i < num_threads; i++){
@@ -142,7 +144,7 @@ int main(int argc, char **argv){
 	int my_ops = num_threads*num_iterations*2;
 	long long op_time = my_time/my_ops;
 	char* res_yield = "";
-	if(my_yield){
+	if(opt_yield){
 		res_yield = "yield-";
 	}
 	char* res_lock = "";
