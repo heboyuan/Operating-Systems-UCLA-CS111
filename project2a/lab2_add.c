@@ -61,6 +61,7 @@ void* runner(){
 			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
 		}
 	}
+	return NULL;
 }
 
 int main(int argc, char **argv){
@@ -137,8 +138,12 @@ int main(int argc, char **argv){
 	char* res_lock = "";
 	if(my_lock == 'n'){
 		res_lock = "none";
-	}else{
-		strcat(res_lock, my_lock);
+	}else if (my_lock == 's'){
+		res_lock = "s";
+	}else if (my_lock == 'm'){
+		res_lock = "m";
+	}else if (my_lock == 'c'){
+		res_lock = "c";
 	}
 	printf("add-%s%s,%d,%d,%d,%lld,%lld,%lld\n", res_yield, res_lock, num_threads, num_iterations,
 			my_ops, my_time, op_time, my_counter);

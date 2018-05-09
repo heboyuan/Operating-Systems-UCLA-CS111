@@ -96,6 +96,7 @@ void* runner(void* temp){
 			__sync_lock_release(&my_spin);
 		}
 	}
+	return NULL;
 }
 
 void handler(){
@@ -246,8 +247,10 @@ int main(int argc, char **argv){
 	char* res_lock;
 	if(my_lock == 'n'){
 		res_lock = "none";
-	}else{
-		res_lock = my_lock;
+	}else if(my_lock == 's'){
+		res_lock = "s";
+	}else if(my_lock == 'm'){
+		res_lock = "m";
 	}
 
 	printf("list-%s%s,%d,%d,1,%d,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, my_ops, my_time, op_time);
