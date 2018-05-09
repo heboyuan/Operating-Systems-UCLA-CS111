@@ -39,8 +39,10 @@ Comment on the general shapes of the curves, and explain why they have this shap
 	for part 1 (add), the time increase slower and slower
 	for part 2 (list), the time keeps increase in similar speed
 Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
-	the increase rate of part 1 (add), is larger than that of part 2 (list) because comparing to
+	the increase rate of part 1 (add), is larger than that of part 2 (list) because comparing to manipulate list, add to number is relatively cheaper
 
 QUESTION 2.2.2 - scalability of spin locks
 Compare the variation in time per protected operation vs the number of threads for list operations protected by Mutex vs Spin locks. Comment on the general shapes of the curves, and explain why they have this shape.
+	the time for both mutex and spin locks increase as the number of threads increase due to the overhead of context switch
 Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+	the shape of the graphs are about the same (both increase), however spin lock increase faster because it need to check conditions
