@@ -10,6 +10,10 @@ do
 		./lab2_add --threads=$i --iterations=$j >> lab2_add.csv
 	done
 done
+for i in 10 20 40 100 1000 10000 100000
+do
+	./lab2_add --iterations=$i >> lab2_add.csv
+done
 
 
 #Re-run your tests, with yields, for ranges of threads (2,4,8,12) and iterat
