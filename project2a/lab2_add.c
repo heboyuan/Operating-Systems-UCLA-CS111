@@ -26,7 +26,7 @@ void* runner(){
 	for(i = 0; i < num_iterations; i++){
 		switch(my_lock){
 			case 'n':
-				add(&counter, 1);
+				add(&my_counter, 1);
 				break;
 			case 's':
 				while (__sync_lock_test_and_set(&my_spin, 1));
