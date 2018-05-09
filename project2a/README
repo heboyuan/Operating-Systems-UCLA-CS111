@@ -36,9 +36,10 @@ QUESTION 2.2.1 - scalability of Mutex
 Compare the variation in time per mutex-protected operation vs the number of threads in Part-1 (adds) and Part-2 (sorted lists).
 	the time increase in both part 1 and part 2 since it need to wait
 Comment on the general shapes of the curves, and explain why they have this shape.
-	
+	for part 1 (add), the time increase slower and slower
+	for part 2 (list), the time keeps increase in similar speed
 Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
-
+	the increase rate of part 1 (add), is larger than that of part 2 (list) because comparing to
 
 QUESTION 2.2.2 - scalability of spin locks
 Compare the variation in time per protected operation vs the number of threads for list operations protected by Mutex vs Spin locks. Comment on the general shapes of the curves, and explain why they have this shape.
