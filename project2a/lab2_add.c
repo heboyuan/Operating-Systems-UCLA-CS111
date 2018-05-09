@@ -24,30 +24,57 @@ void add(long long *pointer, long long value){
 void* runner(){
 	int i;
 	for(i = 0; i < num_iterations; i++){
-		if(my_lock == 'n'){
-			add(&my_counter, 1);
-		}else if(my_lock == 's'){
-
-			while (__sync_lock_test_and_set(&my_spin, 1));
-			add(&my_counter, 1);
-			__sync_lock_release(&my_spin);
-
-		}else if(my_lock == 'm'){
-
-			pthread_mutex_lock(&my_mutex);
-			add(&my_counter, 1);
-			pthread_mutex_unlock(&my_mutex);
-
-		}else if(my_lock == 'c'){
-			long long old_val, new_val;
-			do{
-				if (opt_yield){
-					sched_yield();
-				}
-				old_val = my_counter;
-				new_val = old_val + 1;
-			}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
+		switch(my_lock){
+			case 'n':
+				add(&counter, 1);
+				break;
+			case 's':
+				while (__sync_lock_test_and_set(&my_spin, 1));
+				add(&my_counter, 1);
+				__sync_lock_release(&my_spin);
+				break;
+			case 'm':
+				pthread_mutex_lock(&my_mutex);
+				add(&my_counter, 1);
+				pthread_mutex_unlock(&my_mutex);
+				break;
+			case 'c':
+			{
+				long long old_val, new_val;
+				do{
+					if (opt_yield){
+						sched_yield();
+					}
+					old_val = my_counter;
+					new_val = old_val + 1;
+				}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
+				break;
+			}
 		}
+		// if(my_lock == 'n'){
+		// 	add(&my_counter, 1);
+		// }else if(my_lock == 's'){
+
+		// 	while (__sync_lock_test_and_set(&my_spin, 1));
+		// 	add(&my_counter, 1);
+		// 	__sync_lock_release(&my_spin);
+
+		// }else if(my_lock == 'm'){
+
+		// 	pthread_mutex_lock(&my_mutex);
+		// 	add(&my_counter, 1);
+		// 	pthread_mutex_unlock(&my_mutex);
+
+		// }else if(my_lock == 'c'){
+		// 	long long old_val, new_val;
+		// 	do{
+		// 		if (opt_yield){
+		// 			sched_yield();
+		// 		}
+		// 		old_val = my_counter;
+		// 		new_val = old_val + 1;
+		// 	}while(__sync_val_compare_and_swap(&my_counter, old_val, new_val) != old_val);
+		// }
 	}
 	for(i = 0; i < num_iterations; i++){
 		if(my_lock == 'n'){
