@@ -162,8 +162,8 @@ int main(int argc, char **argv){
 	signal(SIGSEGV, handler);
 
 	my_list.key = NULL;
-	my_list.next = my_list;
-	my_list.prev = my_list;
+	my_list.next = &my_list;
+	my_list.prev = &my_list;
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
 
@@ -197,7 +197,7 @@ int main(int argc, char **argv){
 		}
 	}
 
-	for (int i = 0; i < nthreads; i++) {
+	for (int i = 0; i < num_threads; i++) {
 		if (pthread_join(my_threads[i], NULL)) {
 			fprintf(stderr, "Error: cannot join threads\n");
 			free(my_list_ele);
@@ -215,8 +215,8 @@ int main(int argc, char **argv){
 	}
 
 	long long my_time = (e_time.tv_sec - s_time.tv_sec)*1000000000;
-	my_time += e_time.tv_nsec
-	my_time -= s_time.tv_nsec
+	my_time += e_time.tv_nsec;
+	my_time -= s_time.tv_nsec;
 	int my_ops = num_threads*num_iterations*2;
 	long long op_time = my_time/my_ops;
 	char* res_option;
