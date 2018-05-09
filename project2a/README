@@ -3,3 +3,43 @@
 #ID:004791432
 #SLIPDAYS:1
 
+QUESTION 2.1.1 - causing conflicts:
+Why does it take many iterations before errors are seen?
+	because more number of thread and iterations means there will be more chance of threads interrupting each other, so the situation of updating the number wrong happens more often for large iterations.
+
+Why does a significantly smaller number of iterations so seldom fail?
+	because less number of thread and iterations means there will be a less chance of threads interrupting each other, so the situation of updating the number wrong happens less often for small iterations
+
+QUESTION 2.1.2 - cost of yielding:
+Why are the --yield runs so much slower?
+	because system call and context switch add lots of overhead
+Where is the additional time going?
+	system call & context switch
+Is it possible to get valid per-operation timings if we are using the --yield option?
+	no
+If so, explain how. If not, explain why not.
+	because we can only get the wall time and cannot get the time of overhead, we don't have enough information
+
+QUESTION 2.1.3 - measurement errors:
+Why does the average cost per operation drop with increasing iterations?
+	the overhead of creating is avergaed out (amortized) by the number of iterations
+If the cost per iteration is a function of the number of iterations, how do we know how many iterations to run (or what the "correct" cost is)?
+	we can pick a very large number of iterations where the increase in iteration will result in a very little decrease in average time. In this situation, the effect of overhead is very small.
+
+QUESTION 2.1.4 - costs of serialization:
+Why do all of the options perform similarly for low numbers of threads?
+	small number of threads means all the serialization tools are usually not used since there aren't much racing conditoin. Thus all those options perform similarly
+Why do the three protected operations slow down as the number of threads rises?
+	because multiple threads need to wait for each other (lock contention, wait for critical section)
+
+QUESTION 2.2.1 - scalability of Mutex
+Compare the variation in time per mutex-protected operation vs the number of threads in Part-1 (adds) and Part-2 (sorted lists).
+	the time increase in both part 1 and part 2 since it need to wait
+Comment on the general shapes of the curves, and explain why they have this shape.
+	
+Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+
+
+QUESTION 2.2.2 - scalability of spin locks
+Compare the variation in time per protected operation vs the number of threads for list operations protected by Mutex vs Spin locks. Comment on the general shapes of the curves, and explain why they have this shape.
+Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
