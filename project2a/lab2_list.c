@@ -179,7 +179,7 @@ int main(int argc, char **argv){
 	// 	my_list_ele[i].key = temp_key;
 	// }
 
-    for(i = 0; i < total_elements; i++){
+    for(i = 0; i < num_threads * num_iterations; i++){
         int random_number = rand() % 26; //Bound to a-z 
         char* random_key = malloc(2 * sizeof(char)); // 1 char key + null byte
         random_key[0] = 'a' + random_number; // turn randNumber into character
