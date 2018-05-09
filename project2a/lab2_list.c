@@ -313,7 +313,7 @@ int main(int argc, char **argv){
 	long long my_time = (e_time.tv_sec - s_time.tv_sec)*1000000000;
 	my_time += e_time.tv_nsec;
 	my_time -= s_time.tv_nsec;
-	int my_ops = num_threads*num_iterations*2;
+	int my_ops = num_threads*num_iterations*3;
 	long long op_time = my_time/my_ops;
 	char* res_option;
 	switch(opt_yield){
