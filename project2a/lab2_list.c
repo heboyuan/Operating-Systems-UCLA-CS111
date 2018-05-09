@@ -166,27 +166,13 @@ int main(int argc, char **argv){
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
 
-	int i, j; //, rand_len;
-
-	// static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	// for(i = 0; i < num_threads * num_iterations; i++){
-	// 	rand_len = rand() % 10 + 1;
-	// 	char* temp_key = malloc(sizeof(char) * (rand_len + 1));
-	// 	for(j = 0; j < rand_len; j++){
-	// 		temp_key[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
-	// 	}
-	// 	temp_key[rand_len] = 0;
-	// 	my_list_ele[i].key = temp_key;
-	// }
-
-    for(i = 0; i < num_threads * num_iterations; i++){
-        int random_number = rand() % 26; //Bound to a-z 
-        char* random_key = malloc(2 * sizeof(char)); // 1 char key + null byte
-        random_key[0] = 'a' + random_number; // turn randNumber into character
-        random_key[1] = '\0';
-
-        my_list_ele[i].key = random_key;
-    }
+	int i, j;
+	for(int i = 0; i < num_threads * num_iterations; i++){
+		char* temp_key = malloc(2 * sizeof(char));
+		temp_key[0] = 'a' + rand() % 26;
+		random_key[1] = 0;
+		my_list_ele[i].key = temp_key;
+	}
 
 	int start_loc[num_threads];
 	for(i = 0, j = 0; i < num_threads; i++, j += num_iterations){
