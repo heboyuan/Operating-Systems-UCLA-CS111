@@ -170,7 +170,7 @@ int main(int argc, char **argv){
 	for(int i = 0; i < num_threads * num_iterations; i++){
 		char* temp_key = malloc(2 * sizeof(char));
 		temp_key[0] = 'a' + rand() % 26;
-		random_key[1] = 0;
+		temp_key[1] = 0;
 		my_list_ele[i].key = temp_key;
 	}
 
