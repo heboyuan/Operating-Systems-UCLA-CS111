@@ -47,9 +47,9 @@ void* runner(void* temp){
 				pthread_mutex_lock(&my_mutex);
 				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				long long temp_time = (e_time->tv_sec - s_time->tv_sec) * 1000000000;
-				temp_time += e_time->tv_nsec;
-				temp_time -= s_time->tv_nsec;
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
 				mutex_time[my_tid] += temp_time;
 
 				SortedList_insert(my_list, &my_list_ele[i]);
@@ -90,9 +90,9 @@ void* runner(void* temp){
 			pthread_mutex_lock(&my_mutex);
 			clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-			long long temp_time = (e_time->tv_sec - s_time->tv_sec) * 1000000000;
-			temp_time += e_time->tv_nsec;
-			temp_time -= s_time->tv_nsec;
+			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+			temp_time += e_time.tv_nsec;
+			temp_time -= s_time.tv_nsec;
 			mutex_time[my_tid] += temp_time;
 
 			len = SortedList_length(my_list);
@@ -141,9 +141,9 @@ void* runner(void* temp){
 				pthread_mutex_lock(&my_mutex);
 				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				long long temp_time = (e_time->tv_sec - s_time->tv_sec) * 1000000000;
-				temp_time += e_time->tv_nsec;
-				temp_time -= s_time->tv_nsec;
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
 				mutex_time[my_tid] += temp_time;
 
 
