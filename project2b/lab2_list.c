@@ -13,38 +13,49 @@ int num_iterations = 1;
 int num_lists = 1;
 int opt_yield = 0;
 char my_lock = 'n';
-SortedList_t* my_list;
-SortedListElement_t* my_list_ele;
-int my_spin = 0;
 long long *mutex_time;
-pthread_mutex_t my_mutex = PTHREAD_MUTEX_INITIALIZER;
+typedef struct{
+	SortedList_t m_list;
+	pthread_mutex_t my_mutex = PTHREAD_MUTEX_INITIALIZER;
+	int my_spin;
+}My_Sublist;
+My_Sublist* my_list;
+SortedListElement_t* my_list_ele;
 
 //https://www.codeproject.com/Questions/640193/Random-string-in-language-C
+
+int my_hash(char *str){
+	int val = 5381;
+	val = ((val << 5) + val) + key[i];
+	return val;
+}
 
 void* runner(void* temp){
 	int my_start = *((int *) temp);
 	int my_tid = my_start/num_iterations;
 	int i;
 	struct timespec s_time, e_time;
+	My_Sublist *temp_sublist;
 
 	for(i = my_start; i < my_start + num_iterations; i++){
+		temp_sublist = &my_list[my_hash(my_list_ele[i],key)%num_lists];
 		switch(my_lock){
 			case 'n':
 			{
-				SortedList_insert(my_list, &my_list_ele[i]);
+				SortedList_insert(&temp_sublist->m_list, &my_list_ele[i]);
 				break;
 			}
 			case 's':
 			{
-				while(__sync_lock_test_and_set(&my_spin, 1));
-				SortedList_insert(my_list, &my_list_ele[i]);
-				__sync_lock_release(&my_spin);
+				while(__sync_lock_test_and_set(&temp_sublist->my_spin, 1));
+				SortedList_insert(&temp_sublist->m_list, &my_list_ele[i]);
+				__sync_lock_release(&temp_sublist->my_spin);
 				break;
 			}
 			case 'm':
 			{
 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-				pthread_mutex_lock(&my_mutex);
+				pthread_mutex_lock(&temp_sublist->my_mutex);
 				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
@@ -52,8 +63,8 @@ void* runner(void* temp){
 				temp_time -= s_time.tv_nsec;
 				mutex_time[my_tid] += temp_time;
 
-				SortedList_insert(my_list, &my_list_ele[i]);
-				pthread_mutex_unlock(&my_mutex);
+				SortedList_insert(&temp_sublist->m_list, &my_list_ele[i]);
+				pthread_mutex_unlock(&temp_sublist->my_mutex);
 				break;
 			}
 		}
@@ -74,29 +85,50 @@ void* runner(void* temp){
 	switch(my_lock){
 		case 'n':
 		{
-			len = SortedList_length(my_list);
+			for (i = 0; i < nlists; i++) {
+				if((len = SortedList_length(&my_list[i].m_list)) = -1){
+					break;
+				}
+			}
 			break;
 		}
 		case 's':
 		{
-			while(__sync_lock_test_and_set(&my_spin, 1));
-			len = SortedList_length(my_list);
-			__sync_lock_release(&my_spin);
+			for(i = 0; i < num_lists; i++){
+				while(__sync_lock_test_and_set(&my_list[i].my_spin, 1));
+			}
+			for(i = 0; i < num_lists; i++){
+				if((len = SortedList_length(&my_list[i].m_list)) = -1){
+					break;
+				}
+			}
+			for(i = 0; i < num_lists; i++){
+				__sync_lock_release(&my_list[i].my_spin);
+			}
 			break;
 		}
 		case 'm':
 		{
 			clock_gettime(CLOCK_MONOTONIC, &s_time);
-			pthread_mutex_lock(&my_mutex);
+			for (i = 0; i < num_lists; i++){
+				pthread_mutex_lock(&my_list[i].my_mutex);
+			}
 			clock_gettime(CLOCK_MONOTONIC, &e_time);
 
 			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
 			temp_time += e_time.tv_nsec;
 			temp_time -= s_time.tv_nsec;
 			mutex_time[my_tid] += temp_time;
+			
+			for (i = 0; i < num_lists; i++){
+				if((len = SortedList_length(&my_list[i].m_list)) = -1){
+					break;
+				}
+			}
 
-			len = SortedList_length(my_list);
-			pthread_mutex_unlock(&my_mutex);
+			for(i = 0; i < num_lists; i++){
+				pthread_mutex_unlock(&my_list[i].my_mutex);
+			}
 			break;
 		}
 
@@ -120,10 +152,11 @@ void* runner(void* temp){
 
 	SortedListElement_t* temp_ele = NULL;
 	for(i = my_start; i < my_start + num_iterations; i++){
+		temp_sublist = &my_list[my_hash(my_list_ele[i],key)%num_lists];
 		switch(my_lock){
 			case 'n':
 			{
-				if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
@@ -138,7 +171,7 @@ void* runner(void* temp){
 			case 'm':
 			{
 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-				pthread_mutex_lock(&my_mutex);
+				pthread_mutex_lock(&temp_sublist->my_mutex);
 				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
@@ -148,7 +181,7 @@ void* runner(void* temp){
 
 
 
-				if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
@@ -158,13 +191,13 @@ void* runner(void* temp){
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
-				pthread_mutex_unlock(&my_mutex);
+				pthread_mutex_lock(&temp_sublist->my_mutex);
 				break;
 			}
 			case 's':
 			{
-				while(__sync_lock_test_and_set(&my_spin, 1));
-				if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
+				while(__sync_lock_test_and_set(&temp_sublist->my_spin, 1));
+				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
@@ -174,7 +207,7 @@ void* runner(void* temp){
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
-				__sync_lock_release(&my_spin);
+				__sync_lock_release(&temp_sublist->my_spin);
 				break;
 			}
 		}
@@ -278,7 +311,7 @@ int main(int argc, char **argv){
 				}
 				break;
 			case 'l':
-				num_list = atoi(optarg);
+				num_lists = atoi(optarg);
 				break;
 			default:
 				fprintf(stderr, "Error: unrecoginized arguement\n");
@@ -296,13 +329,17 @@ int main(int argc, char **argv){
 		}
 	}
 
-	my_list = malloc(sizeof(SortedList_t));
-	my_list->key = NULL;
-	my_list->next = my_list;
-	my_list->prev = my_list;
+	my_list = malloc(sizeof(My_Sublist)*num_lists);
+	for(i = 0; i < num_lists; i+){
+		my_list[i].m_list.key = NULL;
+		my_list[i].m_list.next = my_list[i].m_list;
+		my_list[i].m_list.prev = my_list[i].m_list;
+		if(my_lock == 's'){
+			my_list[i].my_spin = 0;
+		}
+	}
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
-
 	
 	for(int i = 0; i < num_threads * num_iterations; i++){
 		char* temp_key = malloc(2 * sizeof(char));
@@ -342,16 +379,23 @@ int main(int argc, char **argv){
 	struct timespec e_time;
 	clock_gettime(CLOCK_MONOTONIC, &e_time);
 	
-	if(SortedList_length(my_list) != 0){
-		fprintf(stderr, "Error: list corrupted length not 0\n");
-		char lock_report[2];
-		lock_report[0] = my_lock;
-		lock_report[1] = 0;
-		fprintf(stderr, "yield: %d  lock: %s  threads: %d  iter: %d\n", opt_yield, lock_report, num_threads, num_iterations);
-		free(my_list_ele);
-		free(my_list);
-		exit(2);
+	for(i = 0; i < num_lists; i+){
+		if(SortedList_length(&my_list.m_list)!=0){
+			fprintf(stderr, "Error: list corrupted list length 0\n");
+			//free
+		}
 	}
+
+	// if(SortedList_length(my_list) != 0){
+	// 	fprintf(stderr, "Error: list corrupted length not 0\n");
+	// 	char lock_report[2];
+	// 	lock_report[0] = my_lock;
+	// 	lock_report[1] = 0;
+	// 	fprintf(stderr, "yield: %d  lock: %s  threads: %d  iter: %d\n", opt_yield, lock_report, num_threads, num_iterations);
+	// 	free(my_list_ele);
+	// 	free(my_list);
+	// 	exit(2);
+	// }
 
 	long long my_time = (e_time.tv_sec - s_time.tv_sec)*1000000000;
 	my_time += e_time.tv_nsec;
