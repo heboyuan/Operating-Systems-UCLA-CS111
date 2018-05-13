@@ -168,11 +168,13 @@ void* runner(void* temp){
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
+				fprintf(stderr, "looked up\n");
 				if(SortedList_delete(temp_ele)){
 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
+				fprintf(stderr, "about to release lock\n");
 				pthread_mutex_lock(&(temp_sublist->my_mutex));
 				break;
 			}
