@@ -156,13 +156,13 @@ void* runner(void* temp){
 				pthread_mutex_lock(&(temp_sublist->my_mutex));
 				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				fprintf(stderr, "acquired %i\n");
+				fprintf(stderr, "acquired\n");
 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
 				temp_time += e_time.tv_nsec;
 				temp_time -= s_time.tv_nsec;
 				mutex_time[my_tid] += temp_time;
 
-				fprintf(stderr, "timed %i\n");
+				fprintf(stderr, "timed\n");
 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
