@@ -332,12 +332,12 @@ int main(int argc, char **argv){
 	my_list = malloc(sizeof(My_Sublist)*num_lists);
 	for(i = 0; i < num_lists; i++){
 		my_list[i].m_list.key = NULL;
-		my_list[i].m_list.next = my_list[i].m_list;
-		my_list[i].m_list.prev = my_list[i].m_list;
+		my_list[i].m_list.next = &(my_list[i].m_list);
+		my_list[i].m_list.prev = &(my_list[i].m_list);
 		if(my_lock == 's'){
 			my_list[i].my_spin = 0;
 		}else if(my_lock == 'm'){
-			pthread_mutex_init(&(my_list[i].lock), NULL);
+			pthread_mutex_init(&(my_list[i].my_mutex), NULL);
 		}
 	}
 
@@ -382,7 +382,7 @@ int main(int argc, char **argv){
 	clock_gettime(CLOCK_MONOTONIC, &e_time);
 	
 	for(i = 0; i < num_lists; i++){
-		if(SortedList_length(&(my_list.m_list))!=0){
+		if(SortedList_length(&(my_list[i].m_list))!=0){
 			fprintf(stderr, "Error: list corrupted list length 0\n");
 			//free
 		}
