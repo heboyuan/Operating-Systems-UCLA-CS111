@@ -133,7 +133,7 @@ void* runner(void* temp){
 
 	SortedListElement_t* temp_ele = NULL;
 	for(i = my_start; i < my_start + num_iterations; i++){
-		fprintf(stderr, "deleting position %i\n", i);
+		//fprintf(stderr, "deleting position %i\n", i);
 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
 		switch(my_lock){
 			case 'n':
