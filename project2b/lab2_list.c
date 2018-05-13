@@ -175,7 +175,7 @@ void* runner(void* temp){
 					exit(2);
 				}
 				fprintf(stderr, "about to release lock\n");
-				pthread_mutex_lock(&(temp_sublist->my_mutex));
+				pthread_mutex_unlock(&(temp_sublist->my_mutex));
 				fprintf(stderr, "lock released\n");
 				break;
 			}
