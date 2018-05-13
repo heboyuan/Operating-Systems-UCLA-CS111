@@ -72,7 +72,7 @@ void* runner(void* temp){
 	}
 
 	int len = 0;
-	fprintf(stderr, "counting\n", i);
+	fprintf(stderr, "counting\n");
 	switch(my_lock){
 		case 'n':
 		{
