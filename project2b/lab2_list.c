@@ -176,6 +176,7 @@ void* runner(void* temp){
 				}
 				fprintf(stderr, "about to release lock\n");
 				pthread_mutex_lock(&(temp_sublist->my_mutex));
+				fprintf(stderr, "lock released\n");
 				break;
 			}
 			case 's':
