@@ -308,7 +308,7 @@ int main(int argc, char **argv){
 	pthread_t my_threads[num_threads];
 
 	for(i= 0; i < num_threads; i++){
-		fprintf(stderr, "starting thread %i\n", i);
+		//fprintf(stderr, "starting thread %i\n", i);
 		if (pthread_create(&my_threads[i], NULL, runner, (void *) &start_loc[i])) {
 			fprintf(stderr, "Error: cannot create threads\n");
 			free(my_list_ele);
@@ -318,7 +318,7 @@ int main(int argc, char **argv){
 	}
 
 	for (i = 0; i < num_threads; i++) {
-		fprintf(stderr, "joining thread %i\n", i);
+		//fprintf(stderr, "joining thread %i\n", i);
 		if (pthread_join(my_threads[i], NULL)) {
 			fprintf(stderr, "Error: cannot join threads\n");
 			free(my_list_ele);
