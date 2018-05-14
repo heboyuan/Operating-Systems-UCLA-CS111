@@ -34,9 +34,9 @@ set logscale y 10
 set output 'lab2b_1.png'
 set key left top
 plot \
-     "< grep -E 'list-none-m,[0-9]+,1000,1,' lab2b_list_1.csv" using ($2):(1000000000/($7))\
+     "< grep -E 'list-none-m,[0-9]+,1000,1,' lab2b_list.csv" using ($2):(1000000000/($7))\
      title  'throughput w/mutex' with linespoints lc rgb 'blue', \
-     "< grep -E 'list-none-s,[0-9]+,1000,1,' lab2b_list_1.csv" using ($2):(1000000000/($7))\
+     "< grep -E 'list-none-s,[0-9]+,1000,1,' lab2b_list.csv" using ($2):(1000000000/($7))\
      title  'throughput w/spin-lock' with linespoints lc rgb 'red'
 
 
@@ -49,9 +49,9 @@ set logscale y 10
 set output 'lab2b_2.png'
 set key left top
 plot \
-     "<grep -E 'list-none-m,[0-9],1000,1,|list-none-m,16,1000,1,|list-none-m,24,1000,1,' lab2b_list_1.csv" \
+     "<grep -E 'list-none-m,[0-9],1000,1,|list-none-m,16,1000,1,|list-none-m,24,1000,1,' lab2b_list.csv" \
      using ($2):($7) title 'time per opration' with linespoints lc rgb 'blue',\
-     "<grep -E 'list-none-m,[0-9],1000,1,|list-none-m,16,1000,1,|list-none-m,24,1000,1,' lab2b_list_1.csv" \
+     "<grep -E 'list-none-m,[0-9],1000,1,|list-none-m,16,1000,1,|list-none-m,24,1000,1,' lab2b_list.csv" \
      using ($2):($8) title 'wait time' with linespoints lc rgb 'red'
 
 set title "threads and iterations that run (protected) w/o failure"

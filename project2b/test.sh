@@ -2,11 +2,11 @@
 # synchronization method
 for i in 1 2 4 8 12 16 24
 do
-	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list_1.csv
+	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list.csv
 done
 for i in 1 2 4 8 12 16 24
 do
-	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab2b_list_1.csv
+	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab2b_list.csv
 done
 
 # Run your program with --yield=id, 4 lists, 1,4,8,12,16 threads, and 1, 2, 4, 8, 16 iteratio
