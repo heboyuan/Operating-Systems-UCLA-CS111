@@ -9,14 +9,6 @@ do
 	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab2b_list.csv
 done
 
-# Run the list mutex test again for 1,000 iterations and 1, 2, 4, 8, 16, 24 threads, and plot 
-# the wait-for-lock time, and the average time per operation against the number of competing 
-# threads
-for i in 1 2 4 8 12 16 24
-do
-	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list.csv
-done
-
 # Run your program with --yield=id, 4 lists, 1,4,8,12,16 threads, and 1, 2, 4, 8, 16 iteratio
 # ns (and no synchronization) to see how many iterations it takes to reliably fail (and make 
 # sure your Makefile expects some of these tests to fail).
