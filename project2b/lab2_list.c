@@ -54,14 +54,14 @@ void* runner(void* temp){
 			}
 			case 'm':
 			{
-				clock_gettime(CLOCK_MONOTONIC, &s_time);
+				//clock_gettime(CLOCK_MONOTONIC, &s_time);
 				pthread_mutex_lock(&(temp_sublist->my_mutex));
-				clock_gettime(CLOCK_MONOTONIC, &e_time);
+				//clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-				temp_time += e_time.tv_nsec;
-				temp_time -= s_time.tv_nsec;
-				mutex_time[my_tid] += temp_time;
+				//long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				//temp_time += e_time.tv_nsec;
+				//temp_time -= s_time.tv_nsec;
+				//mutex_time[my_tid] += temp_time;
 
 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
@@ -71,7 +71,6 @@ void* runner(void* temp){
 	}
 
 	int len = 0;
-	//fprintf(stderr, "counting\n");
 	switch(my_lock){
 		case 'n':
 		{
@@ -99,16 +98,16 @@ void* runner(void* temp){
 		}
 		case 'm':
 		{
-			clock_gettime(CLOCK_MONOTONIC, &s_time);
+			//clock_gettime(CLOCK_MONOTONIC, &s_time);
 			for (i = 0; i < num_lists; i++){
 				pthread_mutex_lock(&my_list[i].my_mutex);
 			}
-			clock_gettime(CLOCK_MONOTONIC, &e_time);
+			//clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-			temp_time += e_time.tv_nsec;
-			temp_time -= s_time.tv_nsec;
-			mutex_time[my_tid] += temp_time;
+			//long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+			//temp_time += e_time.tv_nsec;
+			//temp_time -= s_time.tv_nsec;
+			//mutex_time[my_tid] += temp_time;
 			
 			for (i = 0; i < num_lists; i++){
 				if((len = SortedList_length(&my_list[i].m_list)) == -1){
@@ -132,7 +131,6 @@ void* runner(void* temp){
 
 	SortedListElement_t* temp_ele = NULL;
 	for(i = my_start; i < my_start + num_iterations; i++){
-		//fprintf(stderr, "deleting position %i\n", i);
 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
 		switch(my_lock){
 			case 'n':
@@ -151,31 +149,26 @@ void* runner(void* temp){
 			}
 			case 'm':
 			{
-				clock_gettime(CLOCK_MONOTONIC, &s_time);
+				//clock_gettime(CLOCK_MONOTONIC, &s_time);
 				pthread_mutex_lock(&(temp_sublist->my_mutex));
-				clock_gettime(CLOCK_MONOTONIC, &e_time);
+				//clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				//fprintf(stderr, "acquired\n");
-				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-				temp_time += e_time.tv_nsec;
-				temp_time -= s_time.tv_nsec;
-				mutex_time[my_tid] += temp_time;
+				//long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				//temp_time += e_time.tv_nsec;
+				//temp_time -= s_time.tv_nsec;
+				//mutex_time[my_tid] += temp_time;
 
-				//fprintf(stderr, "timed\n");
 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
-				//fprintf(stderr, "looked up\n");
 				if(SortedList_delete(temp_ele)){
 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
 					exit(2);
 				}
-				//fprintf(stderr, "about to release lock\n");
 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
-				//fprintf(stderr, "lock released\n");
 				break;
 			}
 			case 's':
@@ -209,7 +202,6 @@ void handler(){
 
 int main(int argc, char **argv){
 	srand(time(NULL));
-
 
 	static struct option long_option[] = {
 		{"threads", required_argument, 0, 't'},
@@ -289,7 +281,7 @@ int main(int argc, char **argv){
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
 	
-	for(int i = 0; i < num_threads * num_iterations; i++){
+	for(i = 0; i < num_threads * num_iterations; i++){
 		char* temp_key = malloc(2 * sizeof(char));
 		temp_key[0] = 'a' + rand() % 26;
 		temp_key[1] = 0;
