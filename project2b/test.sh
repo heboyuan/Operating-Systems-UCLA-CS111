@@ -1,131 +1,65 @@
-# plot average wait time for mutex in list
-./lab2_list --threads=1  --iterations=1000 --sync=m > lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=1000 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=24 --iterations=1000 --sync=m >> lab_2b_list.csv
+# Capture the output, and produce a plot of the total number of operations per second for each
+# synchronization method
+for i in 1 2 4 8 12 16 24
+do
+	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab_2b_list.csv
+done
+for i in 1 2 4 8 12 16 24
+do
+	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab_2b_list.csv
+done
 
-# Confirm the correctness of new implementation
-# how many iterations it takes to reliably fail
-# --yield=id, 4 lists, 1,4,8,12,16 threads,
-# and 1, 2, 4, 8, 16 iterations (and no synchronization)
-./lab2_list --threads=1  --iterations=1   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=2   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=4   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=8   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=16  --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=2   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=4   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=8   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=16  --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=2   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=4   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=8   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=16  --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=2   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=4   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=8   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=16  --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=1   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=2   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=4   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=8   --yield=id --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=16  --yield=id --lists=4 >> lab_2b_list.csv
+# Run the list mutex test again for 1,000 iterations and 1, 2, 4, 8, 16, 24 threads, and plot 
+# the wait-for-lock time, and the average time per operation against the number of competing 
+# threads
+for i in 1 2 4 8 12 16 24
+do
+	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab_2b_list.csv
+done
 
-# updates are now properly protected
-# --yield=id, 4 lists, 1,4,8,12,16 threads,
-# and 10, 20, 40, 80 iterations, --sync=s and --sync=m
-# m
-./lab2_list --threads=1  --iterations=10  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=20  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=40  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=80  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=10  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=20  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=40  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=80  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=10  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=20  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=40  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=80  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=10  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=20  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=40  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=80  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=10  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=20  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=40  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=80  --yield=id --lists=4 --sync=m >> lab_2b_list.csv
-# s
-./lab2_list --threads=1  --iterations=10  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=20  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=40  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=80  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=10  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=20  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=40  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=80  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=10  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=20  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=40  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=80  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=10  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=20  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=40  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=80  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=10  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=20  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=40  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=16 --iterations=80  --yield=id --lists=4 --sync=s >> lab_2b_list.csv
+# Run your program with --yield=id, 4 lists, 1,4,8,12,16 threads, and 1, 2, 4, 8, 16 iteratio
+# ns (and no synchronization) to see how many iterations it takes to reliably fail (and make 
+# sure your Makefile expects some of these tests to fail).
 
-# measure the performance
-# without yields for 1000 iterations, 1,2,4,8,12 threads, and 1,4,8,16 lists
-# 1 list
-#./lab2_list --threads=1  --iterations=1000 --sync=m >> lab_2b_list.csv
-#./lab2_list --threads=2  --iterations=1000 --sync=m >> lab_2b_list.csv
-#./lab2_list --threads=4  --iterations=1000 --sync=m >> lab_2b_list.csv
-#./lab2_list --threads=8  --iterations=1000 --sync=m >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=m >> lab_2b_list.csv
-# I'm wondering if Dr. Reiher ever realized this test is done before. This lab is a JOKE.
-./lab2_list --threads=1  --iterations=1000 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=s >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=s >> lab_2b_list.csv
-# 4 lists
-./lab2_list --threads=1  --iterations=1000 --sync=m --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=m --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=m --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=m --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=m --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=1000 --sync=s --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=s --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=s --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=s --lists=4 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=s --lists=4 >> lab_2b_list.csv
-# 8 lists
-./lab2_list --threads=1  --iterations=1000 --sync=m --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=m --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=m --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=m --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=m --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=1000 --sync=s --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=s --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=s --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=s --lists=8 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=s --lists=8 >> lab_2b_list.csv
-# 16 lists
-./lab2_list --threads=1  --iterations=1000 --sync=m --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=m --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=m --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=m --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=m --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=1  --iterations=1000 --sync=s --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=2  --iterations=1000 --sync=s --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=4  --iterations=1000 --sync=s --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=8  --iterations=1000 --sync=s --lists=16 >> lab_2b_list.csv
-./lab2_list --threads=12 --iterations=1000 --sync=s --lists=16 >> lab_2b_list.csv
+for i in 1 4 8 12 16
+do
+	for j in 1 2 4 8 16
+	do
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 >> lab_2b_list.csv
+	done
+done
+
+# Run your program with --yield=id, 4 lists, 1,4,8,12,16 threads, and 10, 20, 40, 80 iterations
+# , --sync=s and --sync=m to confirm that updates are now properly protected (i.e., all runs su
+# cceeded).
+for i in 1 4 8 12 16
+do
+	for j in 10 20 40 80
+	do
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=s >> lab_2b_list.csv
+	done
+done
+for i in 1 4 8 12 16
+do
+	for j in 10 20 40 80
+	do
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=m >> lab_2b_list.csv
+	done
+done
+
+#Rerun both synchronized versions, without yields, for 1000 iterations, 1,2,4,8,12 threads, and
+#  1,4,8,16 lists
+for i in 1 2 4 8 12
+do
+	for j in 1 4 8 16
+	do
+		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=m >> lab_2b_list.csv
+	done
+done
+for i in 1 2 4 8 12
+do
+	for j in 1 4 8 16
+	do
+		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=s >> lab_2b_list.csv
+	done
+done

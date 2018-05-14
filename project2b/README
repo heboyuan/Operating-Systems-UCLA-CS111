@@ -1,0 +1,40 @@
+#NAME:Boyuan He
+#EMAIL:boyuan_heboyuan@live.com
+#ID:004791432
+
+QUESTION 2.3.1 - Cycles in the basic list implementation:
+Where do you believe most of the cycles are spent in the 1 and 2-thread list tests?
+	Most time are spent in list operations
+
+Why do you believe these to be the most expensive parts of the code?
+	since there isn't much threads operating, the contention is very low so the time spent on acquiring and releasing lock is very low. Thus, most time is used for list operations
+
+Where do you believe most of the time/cycles are being spent in the high-thread spin-lock tests?
+	if there are many threads, most time would be spent on spinning of the threads
+
+Where do you believe most of the time/cycles are being spent in the high-thread mutex tests?
+	most time would be spent on context switch between the threads since it is very expensive
+
+QUESTION 2.3.2 - Execution Profiling:
+Where (what lines of code) are consuming most of the cycles when the spin-lock version of the list exerciser is run with a large number of threads?
+	the line of spin-lock check
+
+Why does this operation become so expensive with large numbers of threads?
+	since there are many threads, the contention between threads is very high, so each thread would spend lots of time doing nothing but spinning.
+
+QUESTION 2.3.3 - Mutex Wait Time:
+Look at the average time per operation (vs. # threads) and the average wait-for-mutex time (vs. #threads).
+Why does the average lock-wait time rise so dramatically with the number of contending threads?
+	Since more threads are trying to get the same lock, the contention is high, so each thread would need to wait much longer.
+Why does the completion time per operation rise (less dramatically) with the number of contending threads?
+	since the thread runs in parallel the completion time increases as the number of context switch increases, which increases as the number of threads.
+How is it possible for the wait time per operation to go up faster (or higher) than the completion time per operation?
+	completion time is just the time for the whole operation but the wait time is the time for each thread, since threads runs parallely, the wait time per operation increases faster
+
+QUESTION 2.3.4 - Performance of Partitioned Lists
+Explain the change in performance of the synchronized methods as a function of the number of lists.
+	because many threads are trying to get the same lock, the wait the for lock increases
+Should the throughput continue increasing as the number of lists is further increased? If not, explain why not.
+	It depends on the number of CPU or CPU cores which determines the number of threads that can run parallely. If we have large number of CPU cores, we will be able to get more throughput, but for a limit number of cores , we will not be able to increase throughput in this way forever
+It seems reasonable to suggest the throughput of an N-way partitioned list should be equivalent to the throughput of a single list with fewer (1/N) threads. Does this appear to be true in the above curves? If not, explain why not.
+	No, since more number of sublist means shorter sublist, the level of contention will decrease due to the smaller critical section
