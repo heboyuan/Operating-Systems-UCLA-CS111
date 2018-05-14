@@ -24,6 +24,11 @@ SortedListElement_t* my_list_ele;
 
 //https://www.codeproject.com/Questions/640193/Random-string-in-language-C
 
+int my_hash(const char *str){
+	int val = *str;
+	return val;
+}
+
 void* runner(void* temp){
 	int my_start = *((int *) temp);
 	int my_tid = my_start/num_iterations;
@@ -32,7 +37,7 @@ void* runner(void* temp){
 	My_Sublist *temp_sublist;
 
 	for(i = my_start; i < my_start + num_iterations; i++){
-		temp_sublist = &my_list[(my_list_ele[i].key)%num_lists];
+		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
 		switch(my_lock){
 			case 'n':
 			{
@@ -125,7 +130,7 @@ void* runner(void* temp){
 
 	SortedListElement_t* temp_ele = NULL;
 	for(i = my_start; i < my_start + num_iterations; i++){
-		temp_sublist = &my_list[(my_list_ele[i].key)%num_lists];
+		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
 		switch(my_lock){
 			case 'n':
 			{
