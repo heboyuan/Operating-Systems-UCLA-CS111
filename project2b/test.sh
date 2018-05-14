@@ -2,11 +2,11 @@
 # synchronization method
 for i in 1 2 4 8 12 16 24
 do
-	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab_2b_list.csv
+	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list.csv
 done
 for i in 1 2 4 8 12 16 24
 do
-	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab_2b_list.csv
+	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab2b_list.csv
 done
 
 # Run the list mutex test again for 1,000 iterations and 1, 2, 4, 8, 16, 24 threads, and plot 
@@ -14,7 +14,7 @@ done
 # threads
 for i in 1 2 4 8 12 16 24
 do
-	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab_2b_list.csv
+	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list.csv
 done
 
 # Run your program with --yield=id, 4 lists, 1,4,8,12,16 threads, and 1, 2, 4, 8, 16 iteratio
@@ -25,7 +25,7 @@ for i in 1 4 8 12 16
 do
 	for j in 1 2 4 8 16
 	do
-		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 >> lab_2b_list.csv
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 >> lab2b_list.csv
 	done
 done
 
@@ -36,14 +36,14 @@ for i in 1 4 8 12 16
 do
 	for j in 10 20 40 80
 	do
-		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=s >> lab_2b_list.csv
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=s >> lab2b_list.csv
 	done
 done
 for i in 1 4 8 12 16
 do
 	for j in 10 20 40 80
 	do
-		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=m >> lab_2b_list.csv
+		./lab2_list --threads=$i  --iterations=$j   --yield=id --lists=4 --sync=m >> lab2b_list.csv
 	done
 done
 
@@ -53,13 +53,13 @@ for i in 1 2 4 8 12
 do
 	for j in 1 4 8 16
 	do
-		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=m >> lab_2b_list.csv
+		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=m >> lab2b_list.csv
 	done
 done
 for i in 1 2 4 8 12
 do
 	for j in 1 4 8 16
 	do
-		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=s >> lab_2b_list.csv
+		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=s >> lab2b_list.csv
 	done
 done
