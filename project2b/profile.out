@@ -1,0 +1,399 @@
+Total: 1009 samples
+     843  83.5%  83.5%     1009 100.0% runner
+     124  12.3%  95.8%      124  12.3% __strcmp_sse42
+      23   2.3%  98.1%       93   9.2% SortedList_insert
+      16   1.6%  99.7%       70   6.9% SortedList_lookup
+       2   0.2%  99.9%        2   0.2% my_hash
+       1   0.1% 100.0%        1   0.1% _init
+       0   0.0% 100.0%     1009 100.0% __clone
+       0   0.0% 100.0%     1009 100.0% start_thread
+ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
+   843   1009 Total samples (flat / cumulative)
+     .      .   27: int my_hash(const char *str){
+     .      .   28: 	int val = *str;
+     .      .   29: 	return val;
+     .      .   30: }
+     .      .   31: 
+---
+     .      .   32: void* runner(void* temp){
+     .      .   33: 	int my_start = *((int *) temp);
+     .      .   34: 	int my_tid = my_start/num_iterations;
+     .      .   35: 	int i;
+     .      .   36: 	struct timespec s_time, e_time;
+     .      .   37: 	My_Sublist *temp_sublist;
+     .      .   38: 
+     .      .   39: 	for(i = my_start; i < my_start + num_iterations; i++){
+     .      .   40: 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+     .      .   41: 		switch(my_lock){
+     .      .   42: 			case 'n':
+     .      .   43: 			{
+     .      .   44: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   45: 				break;
+     .      .   46: 			}
+     .      .   47: 			case 's':
+     .      .   48: 			{
+     .      .   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   505    505   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      1   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   52: 
+     .      .   53: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .   54: 				temp_time += e_time.tv_nsec;
+     .      .   55: 				temp_time -= s_time.tv_nsec;
+     .      .   56: 				mutex_time[my_tid] += temp_time;
+     .      .   57: 
+     .     93   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   59: 				__sync_lock_release(&(temp_sublist->my_spin));
+     .      .   60: 				break;
+     .      .   61: 			}
+     .      .   62: 			case 'm':
+     .      .   63: 			{
+     .      .   64: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .   65: 				pthread_mutex_lock(&(temp_sublist->my_mutex));
+     .      .   66: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   67: 
+     .      .   68: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .   69: 				temp_time += e_time.tv_nsec;
+     .      .   70: 				temp_time -= s_time.tv_nsec;
+     .      .   71: 				mutex_time[my_tid] += temp_time;
+     .      .   72: 
+     .      .   73: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   74: 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
+     .      .   75: 				break;
+     .      .   76: 			}
+     .      .   77: 		}
+     .      .   78: 	}
+     .      .   79: 
+     .      .   80: 	int len = 0;
+     .      .   81: 	switch(my_lock){
+     .      .   82: 		case 'n':
+     .      .   83: 		{
+     .      .   84: 			for (i = 0; i < num_lists; i++) {
+     .      .   85: 				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+     .      .   86: 					break;
+     .      .   87: 				}
+     .      .   88: 			}
+     .      .   89: 			break;
+     .      .   90: 		}
+     .      .   91: 		case 's':
+     .      .   92: 		{
+     .      .   93: 			
+     .      .   94: 			for(i = 0; i < num_lists; i++){
+     .      .   95: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
+     .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   98: 
+     .      .   99: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  100: 				temp_time += e_time.tv_nsec;
+     .      .  101: 				temp_time -= s_time.tv_nsec;
+     .      .  102: 				mutex_time[my_tid] += temp_time;
+     .      .  103: 			
+     .      .  104: 				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+     .      .  105: 					break;
+     .      .  106: 				}
+     .      .  107: 
+     .      .  108: 				__sync_lock_release(&(my_list[i].my_spin));
+     .      .  109: 			}
+     .      .  110: 			break;
+     .      .  111: 		}
+     .      .  112: 		case 'm':
+     .      .  113: 		{
+     .      .  114: 			
+     .      .  115: 			for (i = 0; i < num_lists; i++){
+     .      .  116: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .  117: 				pthread_mutex_lock(&my_list[i].my_mutex);
+     .      .  118: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  119: 
+     .      .  120: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  121: 				temp_time += e_time.tv_nsec;
+     .      .  122: 				temp_time -= s_time.tv_nsec;
+     .      .  123: 				mutex_time[my_tid] += temp_time;
+     .      .  124: 
+     .      .  125: 				if((len = SortedList_length(&my_list[i].m_list)) < 0){
+     .      .  126: 					break;
+     .      .  127: 				}
+     .      .  128: 
+     .      .  129: 				pthread_mutex_unlock(&my_list[i].my_mutex);
+     .      .  130: 			}
+     .      .  131: 			break;
+     .      .  132: 		}
+     .      .  133: 
+     .      .  134: 	}
+     .      .  135: 
+     .      .  136: 	if(len < 0){
+     .      .  137: 		fprintf(stderr, "Error: list corruption len incorrect\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  138: 			, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  139: 		exit(2);
+     .      .  140: 	}
+     .      .  141: 
+     .      .  142: 	SortedListElement_t* temp_ele = NULL;
+     .      .  143: 	for(i = my_start; i < my_start + num_iterations; i++){
+     .      2  144: 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+     .      .  145: 		switch(my_lock){
+     .      .  146: 			case 'n':
+     .      .  147: 			{
+     .      .  148: 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
+     .      .  149: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  150: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  151: 					exit(2);
+     .      .  152: 				}
+     .      .  153: 				if(SortedList_delete(temp_ele)){
+     .      .  154: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  155: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  156: 					exit(2);
+     .      .  157: 				}
+     .      .  158: 				break;
+     .      .  159: 			}
+     .      .  160: 			case 'm':
+     .      .  161: 			{
+     .      .  162: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .  163: 				pthread_mutex_lock(&(temp_sublist->my_mutex));
+     .      .  164: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  165: 
+     .      .  166: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  167: 				temp_time += e_time.tv_nsec;
+     .      .  168: 				temp_time -= s_time.tv_nsec;
+     .      .  169: 				mutex_time[my_tid] += temp_time;
+     .      .  170: 
+     .      .  171: 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
+     .      .  172: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  173: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  174: 					exit(2);
+     .      .  175: 				}
+     .      .  176: 				if(SortedList_delete(temp_ele)){
+     .      .  177: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  178: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  179: 					exit(2);
+     .      .  180: 				}
+     .      .  181: 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
+     .      .  182: 				break;
+     .      .  183: 			}
+     .      .  184: 			case 's':
+     .      .  185: 			{
+     .      .  186: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   338    338  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      .  188: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  189: 
+     .      .  190: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  191: 				temp_time += e_time.tv_nsec;
+     .      .  192: 				temp_time -= s_time.tv_nsec;
+     .      .  193: 				mutex_time[my_tid] += temp_time;
+     .      .  194: 
+     .     70  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+     .      .  196: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  197: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  198: 					exit(2);
+     .      .  199: 				}
+     .      .  200: 				if(SortedList_delete(temp_ele)){
+     .      .  201: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  202: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  203: 					exit(2);
+     .      .  204: 				}
+     .      .  205: 				__sync_lock_release(&(temp_sublist->my_spin));
+     .      .  206: 				break;
+     .      .  207: 			}
+     .      .  208: 		}
+     .      .  209: 
+     .      .  210: 	}
+     .      .  211: 	return NULL;
+     .      .  212: }
+---
+     .      .  213: 
+     .      .  214: void handler(){
+     .      .  215: 	fprintf(stderr, "Error: Segmentation fault\n");
+     .      .  216: 	free(my_list_ele);
+     .      .  217: 	free(my_list);
+ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
+   843   1009 Total samples (flat / cumulative)
+     .      .   27: int my_hash(const char *str){
+     .      .   28: 	int val = *str;
+     .      .   29: 	return val;
+     .      .   30: }
+     .      .   31: 
+---
+     .      .   32: void* runner(void* temp){
+     .      .   33: 	int my_start = *((int *) temp);
+     .      .   34: 	int my_tid = my_start/num_iterations;
+     .      .   35: 	int i;
+     .      .   36: 	struct timespec s_time, e_time;
+     .      .   37: 	My_Sublist *temp_sublist;
+     .      .   38: 
+     .      .   39: 	for(i = my_start; i < my_start + num_iterations; i++){
+     .      .   40: 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+     .      .   41: 		switch(my_lock){
+     .      .   42: 			case 'n':
+     .      .   43: 			{
+     .      .   44: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   45: 				break;
+     .      .   46: 			}
+     .      .   47: 			case 's':
+     .      .   48: 			{
+     .      .   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   505    505   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      1   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   52: 
+     .      .   53: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .   54: 				temp_time += e_time.tv_nsec;
+     .      .   55: 				temp_time -= s_time.tv_nsec;
+     .      .   56: 				mutex_time[my_tid] += temp_time;
+     .      .   57: 
+     .     93   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   59: 				__sync_lock_release(&(temp_sublist->my_spin));
+     .      .   60: 				break;
+     .      .   61: 			}
+     .      .   62: 			case 'm':
+     .      .   63: 			{
+     .      .   64: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .   65: 				pthread_mutex_lock(&(temp_sublist->my_mutex));
+     .      .   66: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   67: 
+     .      .   68: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .   69: 				temp_time += e_time.tv_nsec;
+     .      .   70: 				temp_time -= s_time.tv_nsec;
+     .      .   71: 				mutex_time[my_tid] += temp_time;
+     .      .   72: 
+     .      .   73: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .      .   74: 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
+     .      .   75: 				break;
+     .      .   76: 			}
+     .      .   77: 		}
+     .      .   78: 	}
+     .      .   79: 
+     .      .   80: 	int len = 0;
+     .      .   81: 	switch(my_lock){
+     .      .   82: 		case 'n':
+     .      .   83: 		{
+     .      .   84: 			for (i = 0; i < num_lists; i++) {
+     .      .   85: 				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+     .      .   86: 					break;
+     .      .   87: 				}
+     .      .   88: 			}
+     .      .   89: 			break;
+     .      .   90: 		}
+     .      .   91: 		case 's':
+     .      .   92: 		{
+     .      .   93: 			
+     .      .   94: 			for(i = 0; i < num_lists; i++){
+     .      .   95: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
+     .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .   98: 
+     .      .   99: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  100: 				temp_time += e_time.tv_nsec;
+     .      .  101: 				temp_time -= s_time.tv_nsec;
+     .      .  102: 				mutex_time[my_tid] += temp_time;
+     .      .  103: 			
+     .      .  104: 				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+     .      .  105: 					break;
+     .      .  106: 				}
+     .      .  107: 
+     .      .  108: 				__sync_lock_release(&(my_list[i].my_spin));
+     .      .  109: 			}
+     .      .  110: 			break;
+     .      .  111: 		}
+     .      .  112: 		case 'm':
+     .      .  113: 		{
+     .      .  114: 			
+     .      .  115: 			for (i = 0; i < num_lists; i++){
+     .      .  116: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .  117: 				pthread_mutex_lock(&my_list[i].my_mutex);
+     .      .  118: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  119: 
+     .      .  120: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  121: 				temp_time += e_time.tv_nsec;
+     .      .  122: 				temp_time -= s_time.tv_nsec;
+     .      .  123: 				mutex_time[my_tid] += temp_time;
+     .      .  124: 
+     .      .  125: 				if((len = SortedList_length(&my_list[i].m_list)) < 0){
+     .      .  126: 					break;
+     .      .  127: 				}
+     .      .  128: 
+     .      .  129: 				pthread_mutex_unlock(&my_list[i].my_mutex);
+     .      .  130: 			}
+     .      .  131: 			break;
+     .      .  132: 		}
+     .      .  133: 
+     .      .  134: 	}
+     .      .  135: 
+     .      .  136: 	if(len < 0){
+     .      .  137: 		fprintf(stderr, "Error: list corruption len incorrect\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  138: 			, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  139: 		exit(2);
+     .      .  140: 	}
+     .      .  141: 
+     .      .  142: 	SortedListElement_t* temp_ele = NULL;
+     .      .  143: 	for(i = my_start; i < my_start + num_iterations; i++){
+     .      2  144: 		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+     .      .  145: 		switch(my_lock){
+     .      .  146: 			case 'n':
+     .      .  147: 			{
+     .      .  148: 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
+     .      .  149: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  150: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  151: 					exit(2);
+     .      .  152: 				}
+     .      .  153: 				if(SortedList_delete(temp_ele)){
+     .      .  154: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  155: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  156: 					exit(2);
+     .      .  157: 				}
+     .      .  158: 				break;
+     .      .  159: 			}
+     .      .  160: 			case 'm':
+     .      .  161: 			{
+     .      .  162: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+     .      .  163: 				pthread_mutex_lock(&(temp_sublist->my_mutex));
+     .      .  164: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  165: 
+     .      .  166: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  167: 				temp_time += e_time.tv_nsec;
+     .      .  168: 				temp_time -= s_time.tv_nsec;
+     .      .  169: 				mutex_time[my_tid] += temp_time;
+     .      .  170: 
+     .      .  171: 				if(!(temp_ele = SortedList_lookup(&(temp_sublist->m_list), my_list_ele[i].key))){
+     .      .  172: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  173: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  174: 					exit(2);
+     .      .  175: 				}
+     .      .  176: 				if(SortedList_delete(temp_ele)){
+     .      .  177: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  178: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  179: 					exit(2);
+     .      .  180: 				}
+     .      .  181: 				pthread_mutex_unlock(&(temp_sublist->my_mutex));
+     .      .  182: 				break;
+     .      .  183: 			}
+     .      .  184: 			case 's':
+     .      .  185: 			{
+     .      .  186: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   338    338  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      .  188: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      .  189: 
+     .      .  190: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+     .      .  191: 				temp_time += e_time.tv_nsec;
+     .      .  192: 				temp_time -= s_time.tv_nsec;
+     .      .  193: 				mutex_time[my_tid] += temp_time;
+     .      .  194: 
+     .     70  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+     .      .  196: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  197: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  198: 					exit(2);
+     .      .  199: 				}
+     .      .  200: 				if(SortedList_delete(temp_ele)){
+     .      .  201: 					fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
+     .      .  202: 						, opt_yield, my_lock, num_threads, num_iterations);
+     .      .  203: 					exit(2);
+     .      .  204: 				}
+     .      .  205: 				__sync_lock_release(&(temp_sublist->my_spin));
+     .      .  206: 				break;
+     .      .  207: 			}
+     .      .  208: 		}
+     .      .  209: 
+     .      .  210: 	}
+     .      .  211: 	return NULL;
+     .      .  212: }
+---
+     .      .  213: 
+     .      .  214: void handler(){
+     .      .  215: 	fprintf(stderr, "Error: Segmentation fault\n");
+     .      .  216: 	free(my_list_ele);
+     .      .  217: 	free(my_list);
