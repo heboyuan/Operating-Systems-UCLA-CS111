@@ -41,16 +41,16 @@ done
 
 #Rerun both synchronized versions, without yields, for 1000 iterations, 1,2,4,8,12 threads, and
 #  1,4,8,16 lists
-for i in 2 4 8 12
+for i in 1 2 4 8 12
 do
-	for j in 1 4 8 16
+	for j in 4 8 16
 	do
 		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=m >> lab2b_list.csv
 	done
 done
-for i in 2 4 8 12
+for i in 1 2 4 8 12
 do
-	for j in 1 4 8 16
+	for j in 4 8 16
 	do
 		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=s >> lab2b_list.csv
 	done
