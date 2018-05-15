@@ -1,10 +1,10 @@
 # Capture the output, and produce a plot of the total number of operations per second for each
 # synchronization method
-for i in 1 2 4 8 12 16 24
+for i in 2 4 8 12 16 24
 do
 	./lab2_list --threads=$i --iterations=1000 --sync=m >> lab2b_list.csv
 done
-for i in 1 2 4 8 12 16 24
+for i in 2 4 8 12 16 24
 do
 	./lab2_list --threads=$i --iterations=1000 --sync=s >> lab2b_list.csv
 done
@@ -43,14 +43,14 @@ done
 #  1,4,8,16 lists
 for i in 1 2 4 8 12
 do
-	for j in 4 8 16
+	for j in 1 4 8 16
 	do
 		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=m >> lab2b_list.csv
 	done
 done
 for i in 1 2 4 8 12
 do
-	for j in 4 8 16
+	for j in 1 4 8 16
 	do
 		./lab2_list --threads=$i  --iterations=1000 --lists=$j --sync=s >> lab2b_list.csv
 	done
