@@ -1,13 +1,14 @@
-Total: 566 samples
-     499  88.2%  88.2%      566 100.0% runner
-      55   9.7%  97.9%       55   9.7% __strcmp_sse42
-       7   1.2%  99.1%       35   6.2% SortedList_insert
-       4   0.7%  99.8%       32   5.7% SortedList_lookup
-       1   0.2% 100.0%        1   0.2% _init
-       0   0.0% 100.0%      566 100.0% __clone
-       0   0.0% 100.0%      566 100.0% start_thread
+Total: 585 samples
+     502  85.8%  85.8%      583  99.7% runner
+      61  10.4%  96.2%       61  10.4% __strcmp_sse42
+       9   1.5%  97.8%       41   7.0% SortedList_lookup
+       8   1.4%  99.1%       40   6.8% SortedList_insert
+       3   0.5%  99.7%        3   0.5% _init
+       2   0.3% 100.0%        2   0.3% __GI_madvise
+       0   0.0% 100.0%      585 100.0% __clone
+       0   0.0% 100.0%      585 100.0% start_thread
 ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
-   499    566 Total samples (flat / cumulative)
+   502    583 Total samples (flat / cumulative)
      .      .   27: int my_hash(const char *str){
      .      .   28: 	int val = *str;
      .      .   29: 	return val;
@@ -31,8 +32,8 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   46: 			}
      .      .   47: 			case 's':
      .      .   48: 			{
-   308    308   49: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .     35   50: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+   331    331   49: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .     40   50: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
      .      .   51: 				__sync_lock_release(&(temp_sublist->my_spin));
      .      .   52: 				break;
      .      .   53: 			}
@@ -157,8 +158,8 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  172: 			}
      .      .  173: 			case 's':
      .      .  174: 			{
-   191    191  175: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .     32  176: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+   171    171  175: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .     41  176: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
      .      .  177: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
      .      .  178: 						, opt_yield, my_lock, num_threads, num_iterations);
      .      .  179: 					exit(2);
@@ -183,7 +184,7 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  197: 	free(my_list_ele);
      .      .  198: 	free(my_list);
 ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
-   499    566 Total samples (flat / cumulative)
+   502    583 Total samples (flat / cumulative)
      .      .   27: int my_hash(const char *str){
      .      .   28: 	int val = *str;
      .      .   29: 	return val;
@@ -207,8 +208,8 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   46: 			}
      .      .   47: 			case 's':
      .      .   48: 			{
-   308    308   49: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .     35   50: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+   331    331   49: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .     40   50: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
      .      .   51: 				__sync_lock_release(&(temp_sublist->my_spin));
      .      .   52: 				break;
      .      .   53: 			}
@@ -333,8 +334,8 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  172: 			}
      .      .  173: 			case 's':
      .      .  174: 			{
-   191    191  175: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .     32  176: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+   171    171  175: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .     41  176: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
      .      .  177: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
      .      .  178: 						, opt_yield, my_lock, num_threads, num_iterations);
      .      .  179: 					exit(2);
