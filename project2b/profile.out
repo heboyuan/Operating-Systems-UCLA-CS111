@@ -1,12 +1,16 @@
-Total: 513 samples
-     419  81.7%  81.7%      513 100.0% runner
-      78  15.2%  96.9%       78  15.2% __strcmp_sse42
-      10   1.9%  98.8%       51   9.9% SortedList_insert
-       6   1.2% 100.0%       43   8.4% SortedList_lookup
-       0   0.0% 100.0%      513 100.0% __clone
-       0   0.0% 100.0%      513 100.0% start_thread
+Total: 1011 samples
+     861  85.2%  85.2%     1011 100.0% runner
+      96   9.5%  94.7%       96   9.5% __strcmp_sse42
+      26   2.6%  97.2%       74   7.3% SortedList_lookup
+      25   2.5%  99.7%       74   7.3% SortedList_insert
+       1   0.1%  99.8%        1   0.1% 0x00007ffee05ec606
+       1   0.1%  99.9%        1   0.1% 0x00007ffee05ec6a9
+       1   0.1% 100.0%        1   0.1% _init
+       0   0.0% 100.0%        2   0.2% __GI___clock_gettime
+       0   0.0% 100.0%     1011 100.0% __clone
+       0   0.0% 100.0%     1011 100.0% start_thread
 ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
-   419    513 Total samples (flat / cumulative)
+   861   1011 Total samples (flat / cumulative)
      .      .   27: int my_hash(const char *str){
      .      .   28: 	int val = *str;
      .      .   29: 	return val;
@@ -30,16 +34,16 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   46: 			}
      .      .   47: 			case 's':
      .      .   48: 			{
-     .      .   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-   315    315   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .      .   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      1   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   609    609   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      1   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .   52: 
      .      .   53: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
      .      .   54: 				temp_time += e_time.tv_nsec;
      .      .   55: 				temp_time -= s_time.tv_nsec;
      .      .   56: 				mutex_time[my_tid] += temp_time;
      .      .   57: 
-     .     51   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .     74   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
      .      .   59: 				__sync_lock_release(&(temp_sublist->my_spin));
      .      .   60: 				break;
      .      .   61: 			}
@@ -77,7 +81,7 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   93: 			
      .      .   94: 			for(i = 0; i < num_lists; i++){
      .      .   95: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-     .      .   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
+     1      1   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
      .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .   98: 
      .      .   99: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
@@ -168,15 +172,15 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  184: 			case 's':
      .      .  185: 			{
      .      .  186: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-   104    104  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+   250    250  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
      .      .  188: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .  189: 
      .      .  190: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
      .      .  191: 				temp_time += e_time.tv_nsec;
      .      .  192: 				temp_time -= s_time.tv_nsec;
-     .      .  193: 				mutex_time[my_tid] += temp_time;
+     1      1  193: 				mutex_time[my_tid] += temp_time;
      .      .  194: 
-     .     43  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+     .     74  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
      .      .  196: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
      .      .  197: 						, opt_yield, my_lock, num_threads, num_iterations);
      .      .  198: 					exit(2);
@@ -201,7 +205,7 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  216: 	free(my_list_ele);
      .      .  217: 	free(my_list);
 ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/project2b/lab2_list.c
-   419    513 Total samples (flat / cumulative)
+   861   1011 Total samples (flat / cumulative)
      .      .   27: int my_hash(const char *str){
      .      .   28: 	int val = *str;
      .      .   29: 	return val;
@@ -225,16 +229,16 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   46: 			}
      .      .   47: 			case 's':
      .      .   48: 			{
-     .      .   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-   315    315   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
-     .      .   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
+     .      1   49: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
+   609    609   50: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+     .      1   51: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .   52: 
      .      .   53: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
      .      .   54: 				temp_time += e_time.tv_nsec;
      .      .   55: 				temp_time -= s_time.tv_nsec;
      .      .   56: 				mutex_time[my_tid] += temp_time;
      .      .   57: 
-     .     51   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
+     .     74   58: 				SortedList_insert(&(temp_sublist->m_list), &my_list_ele[i]);
      .      .   59: 				__sync_lock_release(&(temp_sublist->my_spin));
      .      .   60: 				break;
      .      .   61: 			}
@@ -272,7 +276,7 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .   93: 			
      .      .   94: 			for(i = 0; i < num_lists; i++){
      .      .   95: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-     .      .   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
+     1      1   96: 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
      .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .   98: 
      .      .   99: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
@@ -363,15 +367,15 @@ ROUTINE ====================== runner in /u/eng/class/classboy/test/UCLA-CS111/p
      .      .  184: 			case 's':
      .      .  185: 			{
      .      .  186: 				clock_gettime(CLOCK_MONOTONIC, &s_time);
-   104    104  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
+   250    250  187: 				while(__sync_lock_test_and_set(&(temp_sublist->my_spin), 1));
      .      .  188: 				clock_gettime(CLOCK_MONOTONIC, &e_time);
      .      .  189: 
      .      .  190: 				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
      .      .  191: 				temp_time += e_time.tv_nsec;
      .      .  192: 				temp_time -= s_time.tv_nsec;
-     .      .  193: 				mutex_time[my_tid] += temp_time;
+     1      1  193: 				mutex_time[my_tid] += temp_time;
      .      .  194: 
-     .     43  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
+     .     74  195: 				if(!(temp_ele = SortedList_lookup(&temp_sublist->m_list, my_list_ele[i].key))){
      .      .  196: 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
      .      .  197: 						, opt_yield, my_lock, num_threads, num_iterations);
      .      .  198: 					exit(2);
