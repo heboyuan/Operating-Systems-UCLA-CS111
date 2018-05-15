@@ -284,11 +284,9 @@ int main(int argc, char **argv){
 	int i;
 	signal(SIGSEGV, handler);
 
-	if (my_lock == 'm'){
-		mutex_time = malloc(sizeof(long long) * num_threads);
-		for(i = 0; i < num_threads; i++){
-			mutex_time[i] = 0;
-		}
+	mutex_time = malloc(sizeof(long long) * num_threads);
+	for(i = 0; i < num_threads; i++){
+		mutex_time[i] = 0;
 	}
 
 	my_list = malloc(sizeof(My_Sublist)*num_lists);
@@ -396,16 +394,8 @@ int main(int argc, char **argv){
 	}
 
 	//printf("lock: %c\n", my_lock);
-	if(my_lock == 'm'){
-		long long total_time = 0;
-		for(i = 0; i < num_threads; i++){
-			total_time = mutex_time[i];
-		}
-		printf("list-%s%s,%d,%d,%d,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, num_lists, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
-		
-	}else{
-		printf("list-%s%s,%d,%d,%d,%d,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, num_lists, my_ops, my_time, op_time);
-	}
+	
+	printf("list-%s%s,%d,%d,%d,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, num_lists, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
 	
 	free(my_list_ele);
 	free(my_list);
