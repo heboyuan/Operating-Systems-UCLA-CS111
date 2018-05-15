@@ -20,7 +20,7 @@ profile: lab2_list build
 	rm -f ./raw.gperf
 	LD_PRELOAD=/u/eng/class/classboy/my_lib/lib/libprofiler.so.0 CPUPROFILE=./raw.gperf ./lab2_list --threads=12 --iterations=1000 --sync=s
 	pprof --text ./lab2_list ./raw.gperf > profile.gperf
-	pprof --list=thread_init ./lab2_list ./raw.gperf >> profile.gperf
+	pprof --list=runner ./lab2_list ./raw.gperf >> profile.gperf
 	mv profile.gperf profile.out
 	rm -f ./raw.gperf
 
