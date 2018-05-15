@@ -35,7 +35,15 @@ void* runner(void* temp){
 			}
 			case 's':
 			{
+				clock_gettime(CLOCK_MONOTONIC, &s_time);
 				while(__sync_lock_test_and_set(&my_spin, 1));
+				clock_gettime(CLOCK_MONOTONIC, &e_time);
+
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
+				mutex_time[my_tid] += temp_time;
+				
 				SortedList_insert(my_list, &my_list_ele[i]);
 				__sync_lock_release(&my_spin);
 				break;
@@ -78,7 +86,15 @@ void* runner(void* temp){
 		}
 		case 's':
 		{
+			clock_gettime(CLOCK_MONOTONIC, &s_time);
 			while(__sync_lock_test_and_set(&my_spin, 1));
+			clock_gettime(CLOCK_MONOTONIC, &e_time);
+
+			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+			temp_time += e_time.tv_nsec;
+			temp_time -= s_time.tv_nsec;
+			mutex_time[my_tid] += temp_time;
+			
 			len = SortedList_length(my_list);
 			__sync_lock_release(&my_spin);
 			break;
@@ -162,7 +178,15 @@ void* runner(void* temp){
 			}
 			case 's':
 			{
+				clock_gettime(CLOCK_MONOTONIC, &s_time);
 				while(__sync_lock_test_and_set(&my_spin, 1));
+				clock_gettime(CLOCK_MONOTONIC, &e_time);
+
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
+				mutex_time[my_tid] += temp_time;
+				
 				if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
 					fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
 						, opt_yield, my_lock, num_threads, num_iterations);
@@ -245,13 +269,10 @@ int main(int argc, char **argv){
 
 	int i;
 	signal(SIGSEGV, handler);
-
-	if (my_lock == 'm'){
-		mutex_time = malloc(sizeof(long long) * num_threads);
-		for(i = 0; i < num_threads; i++){
-			mutex_time[i] = 0;
-		}
-	}
+	
+	mutex_time = malloc(sizeof(long long) * num_threads);
+	for(i = 0; i < num_threads; i++){
+		mutex_time[i] = 0;
 
 	my_list = malloc(sizeof(SortedList_t));
 	my_list->key = NULL;
@@ -351,16 +372,11 @@ int main(int argc, char **argv){
 	}
 
 
-	if(my_lock == 'm'){
-		long long total_time = 0;
-		for(i = 0; i < num_threads; i++){
-			total_time = mutex_time[i];
-		}
-		printf("list-%s%s,%d,%d,1,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
-		
-	}else{
-		printf("list-%s%s,%d,%d,1,%d,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, my_ops, my_time, op_time);
-	}
+	long long total_time = 0;
+	for(i = 0; i < num_threads; i++){
+		total_time = mutex_time[i];
+			
+	printf("list-%s%s,%d,%d,1,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
 	
 	free(my_list_ele);
 	free(my_list);
