@@ -371,7 +371,7 @@ int main(int argc, char **argv){
 		res_lock = "m";
 	}
 
-
+	printf("lock: %c\n", my_lock);
 	if(my_lock == 'm'){
 		long long total_time = 0;
 		for(i = 0; i < num_threads; i++){
