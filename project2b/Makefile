@@ -1,7 +1,7 @@
 .SILENT:
 
 default:
-	gcc -Wall -Wextra -pthread -o lab2_list lab2_list.c SortedList.c SortedList.h
+	gcc -Wall -Wextra -pthread -o lab2_list lab2a_list.c SortedList.c SortedList.h
 
 tests: default
 	./test.sh
