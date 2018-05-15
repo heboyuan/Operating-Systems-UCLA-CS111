@@ -393,9 +393,12 @@ int main(int argc, char **argv){
 		res_lock = "m";
 	}
 
-	//printf("lock: %c\n", my_lock);
-	
+	long long total_time = 0;
+	for(i = 0; i < num_threads; i++){
+		total_time = mutex_time[i];
+	}
 	printf("list-%s%s,%d,%d,%d,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, num_lists, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
+
 	
 	free(my_list_ele);
 	free(my_list);
