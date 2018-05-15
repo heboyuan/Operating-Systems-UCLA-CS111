@@ -187,6 +187,7 @@ void handler(){
 	fprintf(stderr, "Error: Segmentation fault\n");
 	free(my_list_ele);
 	free(my_list);
+	free(mutex_time);
 	exit(2);
 }
 
@@ -293,6 +294,7 @@ int main(int argc, char **argv){
 			fprintf(stderr, "Error: cannot create threads\n");
 			free(my_list_ele);
 			free(my_list);
+			free(mutex_time);
 			exit(1);
 		}
 	}
@@ -302,6 +304,7 @@ int main(int argc, char **argv){
 			fprintf(stderr, "Error: cannot join threads\n");
 			free(my_list_ele);
 			free(my_list);
+			free(mutex_time);
 			exit(1);
 		}
 	}
@@ -312,7 +315,10 @@ int main(int argc, char **argv){
 	for(i = 0; i < num_lists; i++){
 		if(SortedList_length(&(my_list[i].m_list))!=0){
 			fprintf(stderr, "Error: list corrupted list length not 0\n");
-			//free
+			free(my_list_ele);
+			free(my_list);
+			free(mutex_time);
+			exit(1);
 		}
 	}
 
@@ -370,5 +376,6 @@ int main(int argc, char **argv){
 	
 	free(my_list_ele);
 	free(my_list);
+	free(mutex_time);
 	exit(0);
 }
