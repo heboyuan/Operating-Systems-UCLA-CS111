@@ -1,6 +1,7 @@
-#NAME:Boyuan He
-#EMAIL:boyuan_heboyuan@live.com
-#ID:004791432
+NAME:Boyuan He
+EMAIL:boyuan_heboyuan@live.com
+ID:004791432
+SLIPDAYS: 1
 
 QUESTION 2.3.1 - Cycles in the basic list implementation:
 Where do you believe most of the cycles are spent in the 1 and 2-thread list tests?
