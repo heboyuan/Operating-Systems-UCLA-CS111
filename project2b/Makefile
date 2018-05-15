@@ -1,10 +1,18 @@
 .SILENT:
 
 default:
-	gcc -Wall -Wextra -pthread -o lab2_list lab2_list_v1.c SortedList.c SortedList.h
+	gcc -Wall -Wextra -pthread -o lab2_list lab2_list.c SortedList.c SortedList.h
 
 tests:
 	./test.sh
+
+profile.gperf:
+	rm -f ./raw.gperf
+	LD_PRELOAD=/u/eng/class/classboy/lib/libprofiler.so.0 \
+		CPUPROFILE=./raw.gperf ./lab2_list --threads=12 --iterations=1000 --sync=s
+	pprof --text ./lab2_list ./raw.gperf > profile.gperf
+	pprof --list=thread_init ./lab2_list ./raw.gperf >> $@
+	rm -f ./raw.gperf
 
 graphs:
 	gnuplot lab2b.gp

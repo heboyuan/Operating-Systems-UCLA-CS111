@@ -178,44 +178,6 @@ void* runner(void* temp){
 			}
 		}
 
-		// if(my_lock == 'n'){
-		// 	if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
-		// 		fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// 	if(SortedList_delete(temp_ele)){
-		// 		fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// }else if(my_lock == 'm'){
-		// 	pthread_mutex_lock(&my_mutex);
-		// 	if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
-		// 		fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// 	if(SortedList_delete(temp_ele)){
-		// 		fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// 	pthread_mutex_unlock(&my_mutex);
-		// }else if(my_lock == 's'){
-		// 	while(__sync_lock_test_and_set(&my_spin, 1));
-		// 	if(!(temp_ele = SortedList_lookup(my_list, my_list_ele[i].key))){
-		// 		fprintf(stderr, "Error: list corruption and element disappear\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// 	if(SortedList_delete(temp_ele)){
-		// 		fprintf(stderr, "Error: list corruption and cannot delete\nyield: %d  lock: %c  threads: %d  iter: %d\n"
-		// 			, opt_yield, my_lock, num_threads, num_iterations);
-		// 		exit(2);
-		// 	}
-		// 	__sync_lock_release(&my_spin);
-		// }
 	}
 	return NULL;
 }
