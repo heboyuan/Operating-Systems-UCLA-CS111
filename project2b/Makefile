@@ -9,7 +9,7 @@ graphs:
 	gnuplot lab2b.gp
 
 dist: tests graphs
-	tar -cvzf lab2b-004757414.tar.gz Makefile README test.sh *.png *.csv lab2b.gp lab2_list.c SortedList.h SortedList.c profile.out
+	tar -cvzf lab2b-004791432.tar.gz Makefile README test.sh *.png *.csv lab2b.gp lab2_list.c SortedList.h SortedList.c profile.out
 clean:
 	rm -f *.tar.gz ./lab2_list *.o
 
