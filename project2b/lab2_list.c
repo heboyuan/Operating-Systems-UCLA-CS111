@@ -295,7 +295,7 @@ int main(int argc, char **argv){
 	my_list[0].m_list.next = &(my_list[0].m_list);
 	my_list[0].m_list.prev = &(my_list[0].m_list);
 	my_list[0].my_spin = 0;
-	my_list[0].my_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&(my_list[0].my_mutex), NULL);
 
 
 	my_list_ele = malloc(sizeof(SortedListElement_t) * num_threads * num_iterations);
