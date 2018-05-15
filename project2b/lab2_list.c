@@ -79,7 +79,7 @@ void* runner(void* temp){
 			// 		break;
 			// 	}
 			// }
-			len = SortedList_length(&(my_list[0].m_list))
+			len = SortedList_length(&(my_list[0].m_list));
 			break;
 		}
 		case 's':
