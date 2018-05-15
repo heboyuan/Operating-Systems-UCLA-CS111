@@ -273,7 +273,7 @@ int main(int argc, char **argv){
 	mutex_time = malloc(sizeof(long long) * num_threads);
 	for(i = 0; i < num_threads; i++){
 		mutex_time[i] = 0;
-
+	}
 	my_list = malloc(sizeof(SortedList_t));
 	my_list->key = NULL;
 	my_list->next = my_list;
@@ -375,7 +375,7 @@ int main(int argc, char **argv){
 	long long total_time = 0;
 	for(i = 0; i < num_threads; i++){
 		total_time = mutex_time[i];
-			
+	}		
 	printf("list-%s%s,%d,%d,1,%d,%lld,%lld,%lld\n", res_option, res_lock, num_threads, num_iterations, my_ops, my_time, op_time, total_time/((num_iterations*2 + 1)*num_threads));
 	
 	free(my_list_ele);
