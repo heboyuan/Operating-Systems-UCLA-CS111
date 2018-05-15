@@ -90,47 +90,42 @@ void* runner(void* temp){
 		}
 		case 's':
 		{
-			clock_gettime(CLOCK_MONOTONIC, &s_time);
+			
 			for(i = 0; i < num_lists; i++){
+				clock_gettime(CLOCK_MONOTONIC, &s_time);
 				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
-			}
-			clock_gettime(CLOCK_MONOTONIC, &e_time);
+				clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-			temp_time += e_time.tv_nsec;
-			temp_time -= s_time.tv_nsec;
-			mutex_time[my_tid] += temp_time;
-
-			for(i = 0; i < num_lists; i++){
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
+				mutex_time[my_tid] += temp_time;
+			
 				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
 					break;
 				}
-			}
-			for(i = 0; i < num_lists; i++){
+
 				__sync_lock_release(&(my_list[i].my_spin));
 			}
 			break;
 		}
 		case 'm':
 		{
-			clock_gettime(CLOCK_MONOTONIC, &s_time);
-			for (i = 0; i < num_lists; i++){
-				pthread_mutex_lock(&my_list[i].my_mutex);
-			}
-			clock_gettime(CLOCK_MONOTONIC, &e_time);
-
-			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-			temp_time += e_time.tv_nsec;
-			temp_time -= s_time.tv_nsec;
-			mutex_time[my_tid] += temp_time;
 			
 			for (i = 0; i < num_lists; i++){
+				clock_gettime(CLOCK_MONOTONIC, &s_time);
+				pthread_mutex_lock(&my_list[i].my_mutex);
+				clock_gettime(CLOCK_MONOTONIC, &e_time);
+
+				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+				temp_time += e_time.tv_nsec;
+				temp_time -= s_time.tv_nsec;
+				mutex_time[my_tid] += temp_time;
+
 				if((len = SortedList_length(&my_list[i].m_list)) < 0){
 					break;
 				}
-			}
 
-			for (i = 0; i < num_lists; i++){
 				pthread_mutex_unlock(&my_list[i].my_mutex);
 			}
 			break;

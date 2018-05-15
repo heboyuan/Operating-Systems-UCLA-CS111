@@ -11,7 +11,7 @@ graphs:
 dist: tests graphs
 	tar -cvzf lab2b-004791432.tar.gz Makefile README test.sh *.png *.csv lab2b.gp lab2_list.c SortedList.h SortedList.c profile.out
 clean:
-	rm -f *.tar.gz ./lab2_list *.o
+	rm -f *.tar.gz lab2_list *.o
 
 lab2_list: clean lab2_list.o SortedList.o
 	gcc -o $@ -pthread -g lab2_list.o SortedList.o
