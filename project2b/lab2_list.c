@@ -311,7 +311,7 @@ int main(int argc, char **argv){
 	
 	for(i = 0; i < num_lists; i++){
 		if(SortedList_length(&(my_list[i].m_list))!=0){
-			fprintf(stderr, "Error: list corrupted list length 0\n");
+			fprintf(stderr, "Error: list corrupted list length not 0\n");
 			//free
 		}
 	}
