@@ -37,7 +37,8 @@ void* runner(void* temp){
 	My_Sublist *temp_sublist;
 
 	for(i = my_start; i < my_start + num_iterations; i++){
-		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+		//temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+		temp_sublist = &my_list[0];
 		switch(my_lock){
 			case 'n':
 			{
@@ -73,41 +74,57 @@ void* runner(void* temp){
 	switch(my_lock){
 		case 'n':
 		{
-			for (i = 0; i < num_lists; i++) {
-				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
-					break;
-				}
-			}
+			// for (i = 0; i < num_lists; i++) {
+			// 	if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+			// 		break;
+			// 	}
+			// }
+			len = SortedList_length(&(my_list[0].m_list))
 			break;
 		}
 		case 's':
 		{
-			for(i = 0; i < num_lists; i++){
-				while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
-				if((len = SortedList_length(&(my_list[i].m_list))) < 0){
-					break;
-				}
-				__sync_lock_release(&(my_list[i].my_spin));
-			}
+			// for(i = 0; i < num_lists; i++){
+			// 	while(__sync_lock_test_and_set(&(my_list[i].my_spin), 1));
+			// 	if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+			// 		break;
+			// 	}
+			// 	__sync_lock_release(&(my_list[i].my_spin));
+			// }
+			while(__sync_lock_test_and_set(&(my_list[0].my_spin), 1));
+			len = SortedList_length(&(my_list[0].m_list));
+			__sync_lock_release(&(my_list[0].my_spin));
 			break;
 		}
 		case 'm':
 		{
-			for (i = 0; i < num_lists; i++){
-				clock_gettime(CLOCK_MONOTONIC, &s_time);
-				pthread_mutex_lock(&my_list[i].my_mutex);
-				clock_gettime(CLOCK_MONOTONIC, &e_time);
+			// for (i = 0; i < num_lists; i++){
+			// 	clock_gettime(CLOCK_MONOTONIC, &s_time);
+			// 	pthread_mutex_lock(&(my_list[i].my_mutex));
+			// 	clock_gettime(CLOCK_MONOTONIC, &e_time);
 
-				long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
-				temp_time += e_time.tv_nsec;
-				temp_time -= s_time.tv_nsec;
-				mutex_time[my_tid] += temp_time;
+			// 	long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+			// 	temp_time += e_time.tv_nsec;
+			// 	temp_time -= s_time.tv_nsec;
+			// 	mutex_time[my_tid] += temp_time;
 			
-				if((len = SortedList_length(&my_list[i].m_list)) < 0){
-					break;
-				}
-				pthread_mutex_unlock(&my_list[i].my_mutex);
-			}
+			// 	if((len = SortedList_length(&(my_list[i].m_list))) < 0){
+			// 		break;
+			// 	}
+			// 	pthread_mutex_unlock(&(my_list[i].my_mutex));
+			// }
+			clock_gettime(CLOCK_MONOTONIC, &s_time);
+			pthread_mutex_lock(&(my_list[0].my_mutex));
+			clock_gettime(CLOCK_MONOTONIC, &e_time);
+
+			long long temp_time = (e_time.tv_sec - s_time.tv_sec) * 1000000000;
+			temp_time += e_time.tv_nsec;
+			temp_time -= s_time.tv_nsec;
+			mutex_time[my_tid] += temp_time;
+
+			len = SortedList_length(&(my_list[0].m_list));
+			pthread_mutex_unlock(&(my_list[0].my_mutex));
+
 			break;
 		}
 
@@ -121,7 +138,8 @@ void* runner(void* temp){
 
 	SortedListElement_t* temp_ele = NULL;
 	for(i = my_start; i < my_start + num_iterations; i++){
-		temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+		//temp_sublist = &my_list[my_hash(my_list_ele[i].key)%num_lists];
+		temp_sublist = &my_list[0];
 		switch(my_lock){
 			case 'n':
 			{
@@ -289,7 +307,6 @@ int main(int argc, char **argv){
 	pthread_t my_threads[num_threads];
 
 	for(i= 0; i < num_threads; i++){
-		//fprintf(stderr, "starting thread %i\n", i);
 		if (pthread_create(&my_threads[i], NULL, runner, (void *) &start_loc[i])) {
 			fprintf(stderr, "Error: cannot create threads\n");
 			free(my_list_ele);
@@ -299,7 +316,6 @@ int main(int argc, char **argv){
 	}
 
 	for (i = 0; i < num_threads; i++) {
-		//fprintf(stderr, "joining thread %i\n", i);
 		if (pthread_join(my_threads[i], NULL)) {
 			fprintf(stderr, "Error: cannot join threads\n");
 			free(my_list_ele);
