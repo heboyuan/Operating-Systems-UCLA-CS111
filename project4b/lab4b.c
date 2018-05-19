@@ -35,7 +35,7 @@ void turn_off(){
 	
 	on = 0;
 	strftime(t_buffer, 10, "%X", timeinfo);
-	if(log){
+	if(my_log){
 		fprintf(my_log_file, "%s SHUTDOWN\n", t_buffer);
 	}else{
 		fprintf(stdout, "%s SHUTDOWN\n", t_buffer);
@@ -64,7 +64,7 @@ void* runner(void* temp){
 	if(my_id == 0){
 		
 		while(on){
-			if(read(stdin, buffer, 2048) == -1){
+			if(read(STDIN_FILENO, buffer, 2048) == -1){
 				fprintf(stderr, "Error: Can't read from stdin \n");
 				exit(1);
 			}
@@ -95,7 +95,7 @@ void* runner(void* temp){
 					scale='C';
 				}
 
-				if(log||(strstr(temp_string, "LOG ") && strstr(temp_string, "LOG ") == temp_string)){
+				if(my_log||(strstr(temp_string, "LOG ") && strstr(temp_string, "LOG ") == temp_string)){
 					fprintf(my_log_file, "%s\n", temp_string);
 				}
 
@@ -125,7 +125,7 @@ void* runner(void* temp){
 				time(&rawtime);
 				timeinfo = localtime(rawtime);
 				strftime(t_buffer, 10, "%X", timeinfo);
-				if(log){
+				if(my_log){
 					fprintf(my_log_file ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
 				}else{
 					fprintf(stdout ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
@@ -142,8 +142,7 @@ int main(int argc, char **argv){
 	static struct option long_options[] = {
 		{"period", required_argument, 0, 'p'},
 		{"scale", required_argument, 0, 's'},
-		{"log", required_argument, 0, 'l'},
-		{0,0,0,0}
+		{"log", required_argument, 0, 'l'}
 	}
 
 	int op;
@@ -169,7 +168,7 @@ int main(int argc, char **argv){
 			case 'l':
 				my_log = 1;
 				my_temp_log = open(optarg, O_RDWR | O_CREAT | O_TRUNC, 0666);
-				my_log_file fdopen(my_temp_log, "w");
+				my_log_file = fdopen(my_temp_log, "w");
 				break;
 			default:
 				fprintf(stderr, "Error: Unrecognized argument\n");
