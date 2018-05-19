@@ -20,6 +20,7 @@ FILE *my_log_file = NULL;
 int scale_change = 0;
 int period_change = 0;
 int on = 1;
+int tid_arr[2] = [0, 1];
 char buffer[2048];
 char t_buffer[10];
 const int B = 4275;
@@ -189,9 +190,9 @@ int main(int argc, char **argv){
 		}
 	}
 	int i;
+
 	for(i = 0; i < 2; i++){
-		int temp_id = i;
-		if(pthread_create(&my_threads[i], NULL, runner,(void *) &temp_id)){
+		if(pthread_create(&my_threads[i], NULL, runner,(void *) &tid_arr[i])){
 			fprintf(stderr, "Error: Can't create threads\n");
 			exit(1);
 		}
