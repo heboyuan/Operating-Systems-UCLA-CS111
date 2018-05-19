@@ -9,6 +9,7 @@
 #include <getopt.h>
 #include <ctype.h>
 #include <string.h>
+#include <pthread.h>
 
 sig_atomic_t volatile running = 1;
 int period = 1;
