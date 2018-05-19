@@ -123,7 +123,7 @@ void* runner(void* temp){
 			while(running){
 				my_temperature = mraa_aio_read(t_temp);
 				time(&rawtime);
-				timeinfo = localtime(rawtime);
+				timeinfo = localtime(&rawtime);
 				strftime(t_buffer, 10, "%X", timeinfo);
 				if(my_log){
 					fprintf(my_log_file ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
@@ -139,11 +139,11 @@ void* runner(void* temp){
 
 int main(int argc, char **argv){
 
-	static struct option long_options[] = {
+	static struct option long_option[] = {
 		{"period", required_argument, 0, 'p'},
 		{"scale", required_argument, 0, 's'},
 		{"log", required_argument, 0, 'l'}
-	}
+	};
 
 	int op;
 	while(1){
