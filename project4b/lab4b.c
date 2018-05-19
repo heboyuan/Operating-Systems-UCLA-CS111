@@ -115,7 +115,7 @@ void* runner(void* temp){
 		mraa_aio_context t_temp;
 		mraa_gpio_context my_button;
 		t_temp = mraa_aio_init(1);
-		my_button = mraa_aio_init(60);
+		my_button = mraa_gpio_init(60);
 		mraa_gpio_dir(my_button, MRAA_GPIO_IN);
 		mraa_gpio_isr(my_button, MRAA_GPIO_EDGE_RISING, &turn_off, NULL);
 
@@ -135,6 +135,7 @@ void* runner(void* temp){
 		}
 
 	}
+	pthread_exit(NULL);
 }
 
 int main(int argc, char **argv){
