@@ -11,4 +11,4 @@ clean:
 	clean lab4b *.o *.tar.gz
 
 check: default
-	./lab4b << -EOF \n
+	./lab4b << OFF\n

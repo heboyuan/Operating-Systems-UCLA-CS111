@@ -14,6 +14,7 @@ sig_atomic_t volatile running = 1;
 int period = 1;
 char scale = 'F';
 int my_log = 0;
+int my_temp_log;
 FILE *my_log_file = NULL;
 int scale_change = 0;
 int period_change = 0;
@@ -23,74 +24,6 @@ char t_buffer[10];
 const int B = 4275;
 const int R0 = 100000; 
 
-
-int main(int argc, char **argv){
-
-	static struct option long_options[] = {
-		{"period", required_argument, 0, 'p'},
-		{"scale", required_argument, 0, 's'},
-		{"log", required_argument, 0, 'l'}
-		{0,0,0,0}
-	}
-
-	int op;
-	while(1){
-		op = getopt_long(argc, argv, "p:s:l:", long_option, NULL);
-		if(op == -1){
-			break;
-		}
-		switch(op){
-			case 'p':
-				period_change = 1;
-				period = atoi(optarg);
-				break;
-			case  's':
-				scale_change = 1;
-				if(optarg[0] == 'C' || optarg[0] == 'F'){
-					scale = optarg[0];
-				}else{
-					fprintf(stderr, "Error: Unrecognized argument\n");
-					exit(1);
-				}
-				break;
-			case 'l':
-				my_log = 1;
-				my_log_file = open(optarg, O_RDWR | O_CREAT | O_TRUNC, 0666); 
-				break;
-			default:
-				fprintf(stderr, "Error: Unrecognized argument\n");
-				exit(1);
-		}
-	}
-
-	pthread_t my_threads[2];
-	if(my_log == 1){
-		//check if the changed from F to C??????????????????
-		if(scale_change){
-			fprintf(my_log_file, "SCALE=%c\n", scale);
-		}
-		if(period_change){
-			fprintf(my_log_file, "PERIOD=%d\n", period);
-		}
-	}
-	int i;
-	for(i = 0; i < 2; i++){
-		int temp_id = i;
-		if(pthread_create(&my_threads[i], NULL, runner,(void *) &temp_id)){
-			fprintf(stderr, "Error: Can't create threads\n");
-			exit(1);
-		}
-	}
-
-	for(i = 0; i < 2; i++){
-		if(pthread_join(my_threads[i], NULL)){
-			fprintf(stderr, "Error: Can't join threads\n");
-			exit(1);
-		}
-	}
-
-	return 0;
-}
 
 void turn_off(){
 	running = 0;
@@ -160,11 +93,9 @@ void* runner(void* temp){
 					scale='F';
 				}else if(strcmp(temp_string, "SCALE=C") == 0){
 					scale='C';
-				}else if(strstr(temp_string, "LOG ") && strstr(temp_string, "LOG ") == temp_string){
-					fprintf(my_log_file, "%s\n", temp_string + 4);
 				}
 
-				if(log){
+				if(log||(strstr(temp_string, "LOG ") && strstr(temp_string, "LOG ") == temp_string)){
 					fprintf(my_log_file, "%s\n", temp_string);
 				}
 
@@ -205,3 +136,73 @@ void* runner(void* temp){
 
 	}
 }
+
+int main(int argc, char **argv){
+
+	static struct option long_options[] = {
+		{"period", required_argument, 0, 'p'},
+		{"scale", required_argument, 0, 's'},
+		{"log", required_argument, 0, 'l'},
+		{0,0,0,0}
+	}
+
+	int op;
+	while(1){
+		op = getopt_long(argc, argv, "p:s:l:", long_option, NULL);
+		if(op == -1){
+			break;
+		}
+		switch(op){
+			case 'p':
+				period_change = 1;
+				period = atoi(optarg);
+				break;
+			case  's':
+				scale_change = 1;
+				if(optarg[0] == 'C' || optarg[0] == 'F'){
+					scale = optarg[0];
+				}else{
+					fprintf(stderr, "Error: Unrecognized argument\n");
+					exit(1);
+				}
+				break;
+			case 'l':
+				my_log = 1;
+				my_temp_log = open(optarg, O_RDWR | O_CREAT | O_TRUNC, 0666);
+				my_log_file fdopen(my_temp_log, "w");
+				break;
+			default:
+				fprintf(stderr, "Error: Unrecognized argument\n");
+				exit(1);
+		}
+	}
+
+	pthread_t my_threads[2];
+	if(my_log == 1){
+		//check if the changed from F to C??????????????????
+		if(scale_change){
+			fprintf(my_log_file, "SCALE=%c\n", scale);
+		}
+		if(period_change){
+			fprintf(my_log_file, "PERIOD=%d\n", period);
+		}
+	}
+	int i;
+	for(i = 0; i < 2; i++){
+		int temp_id = i;
+		if(pthread_create(&my_threads[i], NULL, runner,(void *) &temp_id)){
+			fprintf(stderr, "Error: Can't create threads\n");
+			exit(1);
+		}
+	}
+
+	for(i = 0; i < 2; i++){
+		if(pthread_join(my_threads[i], NULL)){
+			fprintf(stderr, "Error: Can't join threads\n");
+			exit(1);
+		}
+	}
+
+	return 0;
+}
+
