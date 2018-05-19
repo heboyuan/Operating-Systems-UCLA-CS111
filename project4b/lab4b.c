@@ -20,7 +20,7 @@ FILE *my_log_file = NULL;
 int scale_change = 0;
 int period_change = 0;
 int on = 1;
-int tid_arr[2] = [0, 1];
+int tid_arr[2] = {0, 1};
 char buffer[2048];
 char t_buffer[10];
 const int B = 4275;
