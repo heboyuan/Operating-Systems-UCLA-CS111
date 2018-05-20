@@ -129,6 +129,7 @@ void* runner(void* temp){
 				strftime(t_buffer, 10, "%X", timeinfo);
 				if(my_log){
 					fprintf(my_log_file ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
+					fprintf(stdout ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
 				}else{
 					fprintf(stdout ,"%s %.1f\n", t_buffer, change_temperature(my_temperature));
 				}
