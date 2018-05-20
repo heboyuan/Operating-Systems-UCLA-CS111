@@ -8,7 +8,7 @@ dist:
 	tar -cvzf lab4b-004791432.tar.gz lab4b.c README Makefile
 
 clean: 
-	rm lab4b *.o *.tar.gz
+	rm lab4b *.tar.gz
 
 check: default
 	./lab4b << OFF\n
