@@ -36,6 +36,9 @@ void turn_off(){
 	timeinfo = localtime(&rawtime);
 	
 	on = 0;
+	if(my_log){
+		fprintf(my_log_file, "OFF\n");
+	}
 	strftime(t_buffer, 10, "%X", timeinfo);
 	if(my_log){
 		fprintf(my_log_file, "%s SHUTDOWN\n", t_buffer);
