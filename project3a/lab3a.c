@@ -13,7 +13,7 @@
 //====================================================//
 //Utility                                             //
 //====================================================//
-void format_time(uint32_t time_stamp, char* buf) {
+void format_time(time_t time_stamp, char* buf) {
 	time_t temp = time_stamp;
 	struct tm ts = *gmtime(&temp);
 	strftime(buf, 80, "%m/%d/%y %H:%M:%S", &ts);
@@ -145,16 +145,16 @@ int main(int argc, char **argv){
         file_format = 's';
       }
 
-      fprintf(stdout, "%c,%o,%d,%d,%d",
+      fprintf(stdout, "%c,%o,%d,%d,%d,",
         file_format,
         inode.i_mode & 0xFFF,
         inode.i_uid,
         inode.i_gid,
         inode.i_links_count);
 
-      char i_change_time[80];
-      char i_modify_time[80];
-      char i_access_time[80];
+      char i_change_time[20];
+      char i_modify_time[20];
+      char i_access_time[20];
 
       format_time(inode.i_ctime, i_change_time);
 			format_time(inode.i_mtime, i_modify_time);
