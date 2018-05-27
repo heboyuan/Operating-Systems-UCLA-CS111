@@ -125,16 +125,16 @@ int main(int argc, char **argv){
 
   struct ext2_inode inode;
 
-  void* temp_inode = (void*)&inode; 
-  int inode_offset = block_size * cur_group.bg_inode_table; 
+  void* temp_inode = (void*)&inode;
+  int inode_offset = block_size * cur_group.bg_inode_table;
   for(unsigned int index = 0; index < superblock.s_inodes_count; index++){
     //====================================================//
     //part5 inode summary                                 //
     //====================================================//
-    pread(fd, temp_inode, sizeof(inode), inode_offset+(index*sizeof(inode))); 
+    pread(fd, temp_inode, sizeof(inode), inode_offset+(index*sizeof(inode)));
     if(inode.i_mode != 0 && inode.i_links_count != 0){
       fprintf(stdout, "INODE,%d,",(index+1));
-      char file_format = '?'; 
+      char file_format = '?';
       if(S_ISREG(inode.i_mode)){
         file_format = 'f';
       }
@@ -142,16 +142,16 @@ int main(int argc, char **argv){
         file_format = 'd';
       }
       else if(S_ISLNK(inode.i_mode)){
-        file_format = 's'; 
+        file_format = 's';
       }
 
-      fprintf(stdout, "%c,%o,%d,%d,%d", 
+      fprintf(stdout, "%c,%o,%d,%d,%d",
         file_format,
         inode.i_mode & 0xFFF,
-        inode.i_uid, 
-        inode.i_gid, 
+        inode.i_uid,
+        inode.i_gid,
         inode.i_links_count);
-      
+
       char i_change_time[80];
       char i_modify_time[80];
       char i_access_time[80];
@@ -166,8 +166,8 @@ int main(int argc, char **argv){
         i_access_time,
         inode.i_size,
         inode.i_blocks);
-      
-      int num_blocks = EXT2_N_BLOCKS; 
+
+      int num_blocks = EXT2_N_BLOCKS;
       for (int i = 0; i < num_blocks; i++) {
 				fprintf(stdout, ",%u", inode.i_block[i]);
 			}
@@ -177,32 +177,32 @@ int main(int argc, char **argv){
     //part6 directory entries                             //
     //====================================================//
 
-    //------------
-    int cur_block;
-    int num_blocks = EXT2_N_BLOCKS;
-    //------------
-    if(file_type == 'd'){
-      for(cur_block = 0; cur_block < num_blocks; cur_block++){
-        if(inode.i_block[cur_block] != 0){
-          struct ext2_dir_entry entry;
-          unsigned int cur_entry;
-          for(cur_entry = 0; cur_entry < block_size; cur_entry += entry.rec_len){
-            pread(fd, &entry, sizeof(entry), inode.i_block[cur_block]*block_size + cur_entry);
-            if(entry.inode != 0){
-              fprintf(stdout,"DIRENT,%d,%d,%d,%d,%d,'%s'\n",(index+1),cur_entry,
-              entry.inode, entry.rec_len, entry.name_len, entry.name);
+      //------------
+      int cur_block;
+      //------------
+      if(file_format == 'd'){
+        for(cur_block = 0; cur_block < num_blocks; cur_block++){
+          if(inode.i_block[cur_block] != 0){
+            struct ext2_dir_entry entry;
+            unsigned int cur_entry;
+            for(cur_entry = 0; cur_entry < block_size; cur_entry += entry.rec_len){
+              pread(fd, &entry, sizeof(entry), inode.i_block[cur_block]*block_size + cur_entry);
+              if(entry.inode != 0){
+                fprintf(stdout,"DIRENT,%d,%d,%d,%d,%d,'%s'\n",(index+1),cur_entry,
+                entry.inode, entry.rec_len, entry.name_len, entry.name);
+              }
             }
+          }else{
+            break;
           }
-        }else{
-          break;
         }
       }
     }
-  }
 
   //====================================================
   // for multiple group
   //--------------------------------------------------
   // }
   //===================================================
+  }
 }
