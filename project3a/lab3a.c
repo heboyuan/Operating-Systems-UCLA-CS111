@@ -111,7 +111,7 @@ int main(int argc, char **argv){
   struct ext2_inode inode;
   int inode_offset = block_size * cur_group.bg_inode_table; 
   for(int index = 0; index < superblock.s_inodes_count; index++){
-    
+    //
   }
 
   //====================================================
