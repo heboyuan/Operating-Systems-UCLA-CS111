@@ -292,13 +292,16 @@ void scan_indirects(int owner_inode_no, uint32_t block_no, int level, uint32_t c
 					curr_offset,
 					block_no,
 					entries[i]);
-			if (level == 1)
+			if (level == 2 || level == 3) {
+				scan_indirects(owner_inode_no, entries[i], level-1, curr_offset);
+			}
+		}else{
+      if (level == 1)
 				++curr_offset;
 			else if (level == 2 || level == 3) {
 				curr_offset += level == 2 ? 256 : 65536;
-				scan_indirects(owner_inode_no, entries[i], level-1, curr_offset);
 			}
-		}
+    }
 	}
 }
 
