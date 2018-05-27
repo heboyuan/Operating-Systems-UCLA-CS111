@@ -124,6 +124,7 @@ int main(int argc, char **argv){
   }
 
   struct ext2_inode inode;
+
   void* temp_inode = (void*)&inode; 
   int inode_offset = block_size * cur_group.bg_inode_table; 
   for(unsigned int index = 0; index < superblock.s_inodes_count; index++){
@@ -171,6 +172,31 @@ int main(int argc, char **argv){
 				fprintf(stdout, ",%u", inode.i_block[i]);
 			}
 			fprintf(stdout, "\n");
+
+    //====================================================//
+    //part6 directory entries                             //
+    //====================================================//
+
+    //------------
+    int cur_block;
+    int num_blocks = EXT2_N_BLOCKS;
+    //------------
+    if(file_type == 'd'){
+      for(cur_block = 0; cur_block < num_blocks; cur_block++){
+        if(inode.i_block[cur_block] != 0){
+          struct ext2_dir_entry entry;
+          unsigned int cur_entry;
+          for(cur_entry = 0; cur_entry < block_size; cur_entry += entry.rec_len){
+            pread(fd, &entry, sizeof(entry), inode.i_block[cur_block]*block_size + cur_entry);
+            if(entry.inode != 0){
+              fprintf(stdout,"DIRENT,%d,%d,%d,%d,%d,'%s'\n",(index+1),cur_entry,
+              entry.inode, entry.rec_len, entry.name_len, entry.name);
+            }
+          }
+        }else{
+          break;
+        }
+      }
     }
   }
 
