@@ -173,9 +173,9 @@ int main(int argc, char **argv){
 			}
 			fprintf(stdout, "\n");
 
-    //====================================================//
-    //part6 directory entries                             //
-    //====================================================//
+      //====================================================//
+      //part6 directory entries                             //
+      //====================================================//
 
       //------------
       int cur_block;
@@ -200,6 +200,27 @@ int main(int argc, char **argv){
           }
         }
       }
+
+      //====================================================//
+      //part7 directory entries                             //
+      //====================================================//
+      if(file_format == 'd' || file_format == 'f'){
+        int num_entries = block_size/sizeof(uint32_t);
+        int single_ptr[num_entries];
+        if(inode.i_block[12]>0){
+
+        }
+        int* double_ptr[num_entries];
+        if(inode.i_block[13]>0){
+
+        }
+        int* triple_ptr[num_entries]; 
+        if(inode.i_block[14]>0){
+
+        }
+
+      }
+
     }
 
   //====================================================
