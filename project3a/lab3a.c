@@ -169,7 +169,7 @@ int main(int argc, char **argv){
 
       int num_blocks = EXT2_N_BLOCKS;
       for (int i = 0; i < num_blocks; i++) {
-				fprintf(stdout, ",%u", inode.i_block[i]);
+				fprintf(stdout, ",%d", inode.i_block[i]);
 			}
 			fprintf(stdout, "\n");
 
