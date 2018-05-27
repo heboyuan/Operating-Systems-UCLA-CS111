@@ -10,6 +10,18 @@
 #include <sys/time.h>
 #include "ext2_fs.h"
 
+//====================================================//
+//Utility                                             //
+//====================================================//
+void format_time(uint32_t time_stamp, char* buf) {
+	time_t temp = time_stamp;
+	struct tm ts = *gmtime(&temp);
+	strftime(buf, 80, "%m/%d/%y %H:%M:%S", &ts);
+}
+
+//====================================================//
+//Main                                                //
+//====================================================//
 int main(int argc, char **argv){
   if(argc < 2){
     fprintf(stderr, "Error: Invalid arguement\n");
@@ -111,13 +123,55 @@ int main(int argc, char **argv){
     }
   }
 
-  //====================================================//
-  //part5 inode summary                                 //
-  //====================================================//
   struct ext2_inode inode;
+  void* temp_inode = (void*)&inode; 
   int inode_offset = block_size * cur_group.bg_inode_table; 
   for(int index = 0; index < superblock.s_inodes_count; index++){
-    //
+    //====================================================//
+    //part5 inode summary                                 //
+    //====================================================//
+    pread(fd, temp_inode, sizeof(inode), inode_offset+(index*sizeof(inode))); 
+    if(inode.i_mode != 0 && inode.i_links_count != 0){
+      fprintf(stdout, "INODE,%d,",(index+1));
+      char file_format = '?'; 
+      if(S_ISREG(inode.i_mode)){
+        file_format = 'f';
+      }
+      else if(S_ISDIR(inode.i_mode)){
+        file_format = 'd';
+      }
+      else if(S_ISLNK(inode.i_mode)){
+        file_format = 's'; 
+      }
+
+      fprintf(stdout, "%c,%o,%d,%d,%d", 
+        file_format,
+        inode.i_mode & 0xFFF,
+        inode.i_uid, 
+        inode.i_gid, 
+        inode.i_links_count);
+      
+      char i_change_time[80];
+      char i_modify_time[80];
+      char i_access_time[80];
+
+      format_time(inode.i_ctime, i_change_time);
+			format_time(inode.i_mtime, i_modify_time);
+			format_time(inode.i_atime, i_access_time);
+
+      fprintf(stdout, "%s,%s,%s,%d,%d",
+        i_change_time,
+        i_modify_time,
+        i_access_time,
+        inode.i_size,
+        inode.i_blocks);
+      
+      int num_blocks = EXT2_N_BLOCKS; 
+      for (int i = 0; i < num_blocks; i++) {
+				fprintf(stdout, ",%u", inode.i_block[i]);
+			}
+			fprintf(stdout, "\n");
+    }
   }
 
   //====================================================
