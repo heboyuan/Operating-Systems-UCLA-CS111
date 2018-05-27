@@ -51,10 +51,10 @@ int main(int argc, char **argv){
   // pread(fd, &cur_group, sizeof(cur_group), 2048 + group_id*32);
   //====================================================
   pread(fd, &cur_group, sizeof(cur_group), 2048 );
-
   //====================================================
   // for multiple group
   //--------------------------------------------------
+  //
   // int blocks_in_group = superblock.s_blocks_per_group;
   // int inodes_in_group = superblock.s_inodes_per_group;
   // if(group_id = num_group - 1){
@@ -68,7 +68,6 @@ int main(int argc, char **argv){
   // cur_group.bg_block_bitmap, cur_group.bg_inode_bitmap, cur_group.bg_inode_table)
   //====================================================
 
-  //WTF????????????????????????????????????????????????????????????????????????????
   int blocks_in_group = superblock.s_blocks_count%superblock.s_blocks_per_group;
   int inodes_in_group = superblock.s_inodes_count%superblock.s_inodes_per_group;
   if(blocks_in_group == 0){
