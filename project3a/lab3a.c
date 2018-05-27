@@ -191,8 +191,11 @@ int main(int argc, char **argv){
                 fprintf(stdout,"DIRENT,%d,%d,%d,%d,%d,'%s'\n",(index+1),cur_entry,
                 entry.inode, entry.rec_len, entry.name_len, entry.name);
               }
+              //fprintf(stdout,"cur_entry: %i\n", cur_entry);
+              //fprintf(stdout,"cur_block: %i\n num_blocks: %i\n\n", cur_block, num_blocks);
             }
           }else{
+            //fprintf(stdout,"cur_block: %i\n about to break\n\n", cur_block);
             break;
           }
         }
