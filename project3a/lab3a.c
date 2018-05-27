@@ -68,8 +68,15 @@ int main(int argc, char **argv){
   // cur_group.bg_block_bitmap, cur_group.bg_inode_bitmap, cur_group.bg_inode_table)
   //====================================================
 
+  //WTF????????????????????????????????????????????????????????????????????????????
   int blocks_in_group = superblock.s_blocks_count%superblock.s_blocks_per_group;
   int inodes_in_group = superblock.s_inodes_count%superblock.s_inodes_per_group;
+  if(blocks_in_group == 0){
+    blocks_in_group = superblock.s_blocks_per_group;
+  }
+  if(inodes_in_group == 0){
+    inodes_in_group = superblock.s_inodes_per_group;
+  }
 
   fprintf(stdout, "GROUP,%d,%d,%d,%d,%d,%d,%d,%d\n", 0, blocks_in_group,
   inodes_in_group, cur_group.bg_free_blocks_count, cur_group.bg_free_inodes_count,
@@ -80,13 +87,13 @@ int main(int argc, char **argv){
   //part3 free block                                    //
   //====================================================//
   unsigned int byte;
-  for(byte = 0; byte < block_size; byte ++){
-    int buffer;
+  unsigned char buffer;
+  for(byte = 0; byte < block_size; byte++){
     pread(fd, &buffer, 1, cur_group.bg_block_bitmap*block_size + byte);
-    unsigned int bit;
+    int bit;
     for(bit = 0; bit < 8; bit++){
       if((buffer & (1 << bit)) == 0){
-        fprintf(stdout, "BFREE,%d\n", byte*8+bit+1);
+        fprintf(stdout, "BFREE,%d\n", (byte*8)+(bit+1));
       }
     }
   }
@@ -97,10 +104,10 @@ int main(int argc, char **argv){
   for(byte = 0; byte < block_size; byte ++){
     int buffer;
     pread(fd, &buffer, 1, cur_group.bg_inode_bitmap*block_size + byte);
-    unsigned int bit;
+    int bit;
     for(bit = 0; bit < 8; bit++){
       if((buffer & (1 << bit)) == 0){
-        fprintf(stdout, "BFREE,%d\n", byte*8+bit+1);
+        fprintf(stdout, "IFREE,%d\n", byte*8+bit+1);
       }
     }
   }
