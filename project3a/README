@@ -1,3 +1,9 @@
 NAME:Boyuan He,Liuyi Shi
 EMAIL:boyuan_heboyuan@live.com,liuyi_shi@outlook.com
 ID:004791432,904801945
+
+File Description
+lab3a.c: it contains all the implementations
+ext2_fs.h: the header file
+README: this file
+Makefile: can be use to make, clean, and make tarball
