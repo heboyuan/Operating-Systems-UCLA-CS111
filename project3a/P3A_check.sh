@@ -98,28 +98,28 @@ NAME=`getName $README`
 let errors+=$?
 
 echo "... checking slip-day use in $README"
-SLIPDAYS=0
-slips=`grep "SLIPDAYS:" $README`
-if [ $? -eq 0 ]
-then
-	slips=`echo $slips | cut -d: -f2 | tr -d \[:space:\]`
-	if [ -n "$slips" ]
-	then
-		if [[ $slips == ?([0-9]) ]]
-		then
-			SLIPDAYS=$slips
-			echo "    $SLIPDAYS days"
-		else
-			echo "    INVALID SLIPDAYS: $slips"
-			let errors+=1
-		fi
-	else
-		echo "    EMPTY SLIPDAYS ENTRY"
-		let errors+=1
-	fi
-else
-	echo "    no SLIPDAYS: entry"
-fi
+#SLIPDAYS=0
+#slips=`grep "SLIPDAYS:" $README`
+#if [ $? -eq 0 ]
+#then
+#	slips=`echo $slips | cut -d: -f2 | tr -d \[:space:\]`
+#	if [ -n "$slips" ]
+#	then
+#		if [[ $slips == ?([0-9]) ]]
+#		then
+#			SLIPDAYS=$slips
+#			echo "    $SLIPDAYS days"
+#		else
+#			echo "    INVALID SLIPDAYS: $slips"
+#			let errors+=1
+#		fi
+#	else
+#		echo "    EMPTY SLIPDAYS ENTRY"
+#		let errors+=1
+#	fi
+#else
+#	echo "    no SLIPDAYS: entry"
+#fi
 
 echo "... checking for other expected files"
 checkFiles $MAKEFILE $EXPECTED
