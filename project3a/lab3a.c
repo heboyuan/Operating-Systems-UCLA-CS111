@@ -13,7 +13,7 @@
 //====================================================//
 //Utility                                             //
 //====================================================//
-void format_time(time_t time_stamp, char* buf) {
+void format_time(uint32_t time_stamp, char* buf) {
 	time_t temp = time_stamp;
 	struct tm ts = *gmtime(&temp);
 	strftime(buf, 80, "%m/%d/%y %H:%M:%S", &ts);
@@ -152,9 +152,9 @@ int main(int argc, char **argv){
         inode.i_gid,
         inode.i_links_count);
 
-      char i_change_time[20];
-      char i_modify_time[20];
-      char i_access_time[20];
+      char i_change_time[80];
+      char i_modify_time[80];
+      char i_access_time[80];
 
       format_time(inode.i_ctime, i_change_time);
 			format_time(inode.i_mtime, i_modify_time);
@@ -202,25 +202,130 @@ int main(int argc, char **argv){
       }
 
       //====================================================//
-      //part7 directory entries                             //
+      //part7 indirect block references                     //
       //====================================================//
       if(file_format == 'd' || file_format == 'f'){
-        int num_entries = block_size/sizeof(uint32_t);
-        int single_ptr[num_entries];
+        
         if(inode.i_block[12]>0){
-
+          //scan_indirects(inode_no, inode.i_block[EXT2_IND_BLOCK], 1, 12);
+          int curr_offset = 12;
+          int num_entries = block_size/sizeof(uint32_t);
+          int entries[num_entries];
+          memset(entries, 0, sizeof(entries));
+          pread(fd, entries, block_size, 1024+(inode.i_block[EXT2_IND_BLOCK] -1)*block_size);
+          for(int i = 0; i < num_entries; i++){
+            if(entries[i] != 0){
+              fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+					      (index+1),
+					      1,
+					      curr_offset,
+					      inode.i_block[EXT2_IND_BLOCK],
+					      entries[i]);
+            } else {
+              ++curr_offset; 
+            }
+          }
         }
-        int* double_ptr[num_entries];
+
         if(inode.i_block[13]>0){
-
+          //scan_indirects(inode_no, inode.i_block[EXT2_DIND_BLOCK], 2, 268);
+          int curr_offset = 268;
+          int num_entries = block_size/sizeof(uint32_t);
+          int entries[num_entries];
+          memset(entries, 0, sizeof(entries));
+          pread(fd, entries, block_size, 1024+(inode.i_block[EXT2_DIND_BLOCK] -1)*block_size);
+          for(int i = 0; i < num_entries; i++){
+            if(entries[i] != 0){
+              fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+					      (index+1),
+					      2,
+					      curr_offset,
+					      inode.i_block[EXT2_DIND_BLOCK],
+					      entries[i]);
+              //----------------- 1st level --------------------
+              
+              int num_entries_1 = block_size/sizeof(uint32_t);
+              int entries_1[num_entries_1];
+              memset(entries_1, 0, sizeof(entries_1));
+              pread(fd, entries_1, block_size, 1024+(inode.i_block[EXT2_IND_BLOCK] -1)*block_size);
+              for(int i = 0; i < num_entries_1; i++){
+                if(entries_1[i] != 0){
+                  fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+                    (index+1),
+                    1,
+                    curr_offset,
+                    inode.i_block[EXT2_IND_BLOCK],
+                    entries_1[i]);
+                } else {
+                  ++curr_offset;
+                }
+              }
+              //-------------------  END -----------------------
+            } else {
+              curr_offset += 256; 
+            }
+          }
         }
-        int* triple_ptr[num_entries]; 
+        
         if(inode.i_block[14]>0){
-
+          //scan_indirects(inode_no, inode.i_block[EXT2_TIND_BLOCK], 3, 65804);
+          int curr_offset = 65804;
+          int num_entries = block_size/sizeof(uint32_t);
+          int entries[num_entries];
+          memset(entries, 0, sizeof(entries));
+          pread(fd, entries, block_size, 1024+(inode.i_block[EXT2_TIND_BLOCK] -1)*block_size);
+          for(int i = 0; i < num_entries; i++){
+            if(entries[i] != 0){
+              fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+					      (index+1),
+					      3,
+					      curr_offset,
+					      inode.i_block[EXT2_TIND_BLOCK],
+					      entries[i]);
+                //-------------------- 2nd level ---------------------
+                
+                int num_entries_2 = block_size/sizeof(uint32_t);
+                int entries_2[num_entries_2];
+                memset(entries_2, 0, sizeof(entries_2));
+                pread(fd, entries_2, block_size, 1024+(inode.i_block[EXT2_DIND_BLOCK] -1)*block_size);
+                for(int i = 0; i < num_entries_2; i++){
+                  if(entries_2[i] != 0){
+                    fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+                      (index+1),
+                      2,
+                      curr_offset,
+                      inode.i_block[EXT2_DIND_BLOCK],
+                      entries_2[i]);
+                    //----------------- 1st level --------------------
+                    
+                    int num_entries_1 = block_size/sizeof(uint32_t);
+                    int entries_1[num_entries_1];
+                    memset(entries_1, 0, sizeof(entries_1));
+                    pread(fd, entries_1, block_size, 1024+(inode.i_block[EXT2_IND_BLOCK] -1)*block_size);
+                    for(int i = 0; i < num_entries_1; i++){
+                      if(entries_1[i] != 0){
+                        fprintf(stdout, "INDIRECT,%u,%u,%u,%u,%u\n",
+                          (index+1),
+                          1,
+                          curr_offset,
+                          inode.i_block[EXT2_IND_BLOCK],
+                          entries_1[i]);
+                      } else {
+                        ++curr_offset;
+                      }
+                    }
+                    //-------------------  1END -----------------------
+                  } else {
+                    curr_offset += 256; 
+                  }
+                }
+                //--------------------- 2END --------------------------
+            } else {
+              curr_offset += 65536; 
+            }
+          }
         }
-
       }
-
     }
 
   //====================================================
