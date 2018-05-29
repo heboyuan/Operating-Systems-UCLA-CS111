@@ -194,10 +194,15 @@ int main(int argc, char **argv){
         inode.i_size,
         inode.i_blocks);
 
-      int num_blocks = EXT2_N_BLOCKS;
-      for (int i = 0; i < num_blocks; i++) {
-				fprintf(stdout, ",%d", inode.i_block[i]);
+			int num_blocks = EXT2_N_BLOCKS;
+			if(file_format == 's' && inode.i_size < 60){
+				fprintf(stdout, ",%u", inode.i_block[0]);
+			}else{
+				for (int i = 0; i < num_blocks; i++) {
+					fprintf(stdout, ",%d", inode.i_block[i]);
+				}
 			}
+
 			fprintf(stdout, "\n");
 
       //====================================================//
@@ -214,15 +219,18 @@ int main(int argc, char **argv){
             unsigned int cur_entry;
             for(cur_entry = 0; cur_entry < block_size; cur_entry += entry.rec_len){
               pread(fd, &entry, sizeof(entry), inode.i_block[cur_block]*block_size + cur_entry);
+							if(!entry.file_type){
+								break;
+							}
               if(entry.inode != 0){
+								char name_buffer[entry.name_len + 1];
+								memcpy(name_buffer, entry.name, entry.name_len);
+								name_buffer[entry.name_len] = 0;
                 fprintf(stdout,"DIRENT,%d,%d,%d,%d,%d,'%s'\n",(index+1),cur_entry,
-                entry.inode, entry.rec_len, entry.name_len, entry.name);
+                entry.inode, entry.rec_len, entry.name_len, name_buffer);
               }
-              //fprintf(stdout,"cur_entry: %i\n", cur_entry);
-              //fprintf(stdout,"cur_block: %i\n num_blocks: %i\n\n", cur_block, num_blocks);
             }
           }else{
-            //fprintf(stdout,"cur_block: %i\n about to break\n\n", cur_block);
             break;
           }
         }
