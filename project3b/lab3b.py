@@ -30,8 +30,22 @@ class Inode:
 
 
 class DirectoryEntry:
-    def __init__(self, pinode, loffset, rinode, elength, nlength):
+    def __init__(self, pinode, loffset, rinode, elength, nlength, name):
         self.parent_inode = pinode
+        self.logical_offset = loffset
+        self.entry_reference_inode = rinode
+        self.entry_length = elength
+        self.entry_name_lenght = nlength
+        self.entry_name = name
+
+
+class Indirect:
+    def __init__(self, pinumber, level, loffset, bnumber, rnumber):
+        self.parent_inode_number = pinumber
+        self.level = level
+        self.logical_offset = loffset
+        self.block_number = bnumber
+        self.reference_number = rnumber
 
 
 def main():
@@ -45,7 +59,7 @@ def main():
     my_indir = []
 
     # ================================================
-    # Parsing Arguements
+    # Parsing Arguments
     # ================================================
     if len(sys.argv) != 2:
         sys.stderr.write("Error: Unrecognized arguement")
@@ -77,10 +91,10 @@ def main():
             sys.stderr.write("Error: Worry data content\n")
             sys.exit(1)
 
-    #=======================================================
-    #Audit Block
-    #=======================================================
-    
+            # =======================================================
+            # Audit Block
+            # =======================================================
+
 
 if __name__ == "__main__":
     main()
