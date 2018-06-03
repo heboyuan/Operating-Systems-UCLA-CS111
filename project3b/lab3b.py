@@ -3,8 +3,35 @@ import csv
 
 
 class SuperBlock:
-    def __init__(self, nblocks):
+    def __init__(self, nblocks, ninodes, bsize, isize, bgroup, igroup, finode):
         self.num_blocks = nblocks
+        self.num_inodes = ninodes
+        self.block_size = bsize
+        self.inode_size = isize
+        self.blocks_per_group = bgroup
+        self.indoes_per_group = igroup
+        self.first_nonreserved_inode = finode
+
+
+class Inode:
+    def __init__(self, inumber, ftype, mode, owner, group, lcount, ctime, mtime, atime, fsize, dspace, baddress):
+        self.inode_number = inumber
+        self.file_type = ftype
+        self.mode = mode
+        self.owner = owner
+        self.group = group
+        self.linkage_counts = lcount
+        self.change_time = ctime
+        self.modify_time = mtime
+        self.access_time = atime
+        self.file_size = fsize
+        self.disk_space = dspace
+        self.block_address = baddress
+
+
+class DirectoryEntry:
+    def __init__(self, pinode, loffset, rinode, elength, nlength):
+        self.parent_inode = pinode
 
 
 def main():
