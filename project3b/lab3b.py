@@ -231,19 +231,19 @@ def main():
     # =======================================================
     # Audit Directory
     # =======================================================
-    my_parent_inode = []
+    my_parent_inode = {2: 2}
     my_dict_inode = {}
 
     for directoryentry in my_dir:
         inode_number = directoryentry.entry_reference_inode
-        if directoryentry.entry_name != "'.'" and directoryentry.name != "'..'":
+        if directoryentry.entry_name != "'.'" and directoryentry.entry_name != "'..'":
             if 1 <= inode_number <= my_sp.num_inodes and (inode_number not in my_unallocated_inodes):
                 my_parent_inode[inode_number] = directoryentry.parent_inode
     my_parent_inode[2] = 2
 
     for directoryentry in my_dir:
         inode_number = directoryentry.entry_reference_inode
-        directory_name = directoryentry.name[:-1]
+        directory_name = directoryentry.entry_name[:-1]
         parent_inode_number = directoryentry.parent_inode
         if inode_number in my_unallocated_inodes:
             print('DIRECTORY INODE {} NAME {} UNALLOCATED INODE {}'.format(parent_inode_number, directory_name,
