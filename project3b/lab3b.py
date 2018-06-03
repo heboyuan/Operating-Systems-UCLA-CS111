@@ -10,11 +10,19 @@ class SuperBlock:
         self.inode_size = isize
         self.blocks_per_group = bgroup
         self.indoes_per_group = igroup
-        self.first_nonreserved_inode = finode
+        self.first_inode = finode
 
 
 class Group:
-    def __init__(self, gnumber):
+    def __init__(self, gid, bingroup, iingroup, fbid, fiid, fbbn, fibn, fbinode):
+        self.group_id = gid
+        self.bid_group = bingroup
+        self.iid_group = iingroup
+        self.freeblock_id = fbid
+        self.freeinode_id = fiid
+        self.freeblock_bitmap_id = fbbn
+        self.freeinode_bitmap_id = fibn
+        self.first_block_inode = fbinode
 
 class Inode:
     def __init__(self, inumber, ftype, mode, owner, group, lcount, ctime, mtime, atime, fsize, dspace, baddress):
@@ -60,6 +68,7 @@ def main():
     my_inode = []
     my_dir = []
     my_indir = []
+    my_error = False
 
     # ================================================
     # Parsing Arguments
@@ -101,45 +110,98 @@ def main():
     # =======================================================
     # Audit Block
     # =======================================================
+    block_dic = {}
     start_block = my_group.first_block_inode + int(my_sp.inode_size*my_group.iid_group/my_sp.block_size)
     for cur_inode in my_inode:
-    	for index, ele in enumerate(cur_inode.block_address):
-    		if ele != 0:
-    			if index == 12:
-    				cur_level = "INDIRECT BLOCK"
-    				cur_offset = 12
-    			elif index == 13:
-    				cur_level = "DOUBLE INDIRECT BLOCK"
-    				cur_offset = 268
-    			elif index == 14:
-    				cur_level = "TRIPLE INDIRECT BLOCK"
-    				cur_offset = 65804
-    			else:
-    				cur_level = "BLOCK"
-    				cur_offset = 0
+        for index, ele in enumerate(cur_inode.block_address):
+            if ele != 0:
+                if index == 12:
+                    cur_level = "INDIRECT BLOCK"
+                    cur_offset = 12
+                elif index == 13:
+                    cur_level = "DOUBLE INDIRECT BLOCK"
+                    cur_offset = 268
+                elif index == 14:
+                    cur_level = "TRIPLE INDIRECT BLOCK"
+                    cur_offset = 65804
+                else:
+                    cur_level = "BLOCK"
+                    cur_offset = 0
 
-    			if ele in my_bfree:
-    				my_error = True
-    				print('ALLOCATED BLOCK {} ON FREELIST'.format(ele))
-    			else:
-    				changed = False
-    				if ele < 0 or (ele > my_sp.num_blocks and cur_inode.file_type != 's'):
-    					print('INVALID {} {} IN INODE {} AT OFFSET {}'.format(cur_level, ele, cur_inode.inode_number, cur_offset))
-    				else:
-    					changed = True
-    					if ele in block_dic:
-    						block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
-    					else:
-    						block_dic[ele] = []
-    						block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
-    				if ele < start_block:
-    					print('RESERVED {} {} IN INODE {} AT OFFSET {}'.format(cur_level, ele, cur_inode.inode_number, cur_offset))
-    				elif changed == False:
-    					if ele in block_dic:
-    						block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
-    					else:
-    						block_dic[ele] = []
-    						block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+                if ele in my_bfree:
+                    my_error = True
+                    print('ALLOCATED BLOCK {} ON FREELIST'.format(ele))
+                else:
+                    changed = False
+                    if ele < 0 or (ele > my_sp.num_blocks and cur_inode.file_type != 's'):
+                        my_error = True
+                        print('INVALID {} {} IN INODE {} AT OFFSET {}'.format(cur_level, ele, cur_inode.inode_number, cur_offset))
+                    else:
+                        changed = True
+                        if ele in block_dic:
+                            block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+                        else:
+                            block_dic[ele] = []
+                            block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+                    if ele < start_block:
+                        my_error = True
+                        print('RESERVED {} {} IN INODE {} AT OFFSET {}'.format(cur_level, ele, cur_inode.inode_number, cur_offset))
+                    elif not changed:
+                        if ele in block_dic:
+                            block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+                        else:
+                            block_dic[ele] = []
+                            block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+
+    # =======================================================
+    # Audit Inode
+    # =======================================================
+    my_unallocated_inodes = my_ifree
+    my_allocated_inodes = []
+    my_reserved = []
+
+    for inode in my_inode:
+        if inode.file_type == '0':
+            if inode.inode_number not in my_ifree:
+                print("UNALLOCATED INODE {} NOT ON FREELIST".format(inode.inode_number))
+                my_error = True
+                my_unallocated_inodes.append(inode.inode_number)
+            else:
+                if inode.inode_number in my_ifree:
+                    print("ALLOCATED INODE {} ON FREELIST".format(inode.inode_number))
+                    my_error = True
+                    my_unallocated_inodes.remove(inode.inode_number)
+
+                my_allocated_inodes.append(inode.inode_number)
+
+    for i_pos in range(my_sp.first_inode, my_sp.num_inodes):
+        for inode in my_inode:
+            if inode.inode_number == i_pos:
+                my_reserved.append(inode)
+        if not (not (len(my_reserved) <= 0) or not (i_pos not in my_ifree)):
+            # De Morgan Law changed, check if there is an error
+            print("UNALLOCATED INODE {} NOT ON FREELIST".format(i_pos))
+            my_error = True
+            my_unallocated_inodes.append(i_pos)
+
+    # =======================================================
+    # Find Parents
+    # =======================================================
+    my_parent_inode = []
+
+    for directoryentry in my_dir:
+        inode_number = directoryentry.entry_reference_inode
+        if directoryentry.entry_name != "'.'" and directoryentry.name != "'..'":
+            if inode_number >= 1 and inode_number <= my_sp.num_inodes and (inode_number not in my_unallocated_inodes):
+                my_parent_inode[inode_number] = directoryentry.parent_inode
+    my_parent_inode[2] = 2
+
+
+    # =======================================================
+    # Error Checking
+    # =======================================================
+    sys.exit(2) if my_error else sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
