@@ -65,12 +65,14 @@ def main():
         sys.stderr.write("Error: Unrecognized arguement")
         sys.exit(1)
 
-    csv = open(sys.argv[1], 'r')
-    for lines in csv:
+    my_csv = open(sys.argv[1], 'r')
+    for lines in my_csv:
         line_list = lines.split(",")
         if line_list[0] == "SUPERBLOCK":
             my_sp = SuperBlock(int(line_list[1]), int(line_list[2]), int(line_list[3]), int(line_list[4]),
                                int(line_list[5]), int(line_list[6]), int(line_list[7]))
+        elif line_list[0] == "GROUP":
+        	my_group = Group(int(line_list[1]),int(line_list[2]),int(line_list[3]),int(line_list[4]),int(line_list[5]),int(line_list[6]),int(line_list[7]),int(line_list[8]))
         elif line_list[0] == "BFREE":
             my_bfree.append(int(line_list[1]))
         elif line_list[0] == "IFREE":
@@ -91,9 +93,11 @@ def main():
             sys.stderr.write("Error: Worry data content\n")
             sys.exit(1)
 
-            # =======================================================
-            # Audit Block
-            # =======================================================
+    # =======================================================
+    # Audit Block
+    # =======================================================
+
+
 
 
 if __name__ == "__main__":
