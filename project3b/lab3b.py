@@ -150,8 +150,44 @@ def main():
                         if ele in block_dic:
                             block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
                         else:
-                            block_dic[ele] = []
-                            block_dic[ele].append([cur_level, ele, cur_inode.inode_number, cur_offset])
+                            block_dic[ele] = [[cur_level, ele, cur_inode.inode_number, cur_offset]]
+    
+
+    for cur_indir in my_indir:
+    	if cur_indir.level == 1:
+    		cur_level = "INDIRECT BLOCK"
+    	elif cur_indir.level == 2:
+    		cur_level = "DOUBLE INDIRECT BLOCK"
+    	elif cur_indir.level == 3:
+    		cur_level = "TRIPLE INDIRECT BLOCK"
+    	else:
+    		cur_level = "BLOCK"
+
+
+    	if cur_indir.reference_number in my_bfree:
+    		my_error = True
+    		print('ALLOCATED BLOCK {} ON FREELIST'.format(cur_indir.reference_number))
+    	else:
+    		if cur_indir.reference_number < 0 or cur_indir.reference_number > my_sp.num_blocks:
+    			my_error = True
+    			print('INVALID {} {} IN INODE {} AT OFFSET {}'.format(cur_level,cur_indir.reference_number,cur_indir.parent_inode_number,cur_indir.logical_offset))
+    		if cur_indir.reference_number < start_block:
+    			my_error = True
+    			print('RESERVED {} {} IN INODE {} AT OFFSET {}'.format(cur_level,cur_indir.reference_number,cur_indir.parent_inode_number,cur_indir.logical_offset))
+    		if cur_indir.reference_number in block_dic:
+    			block_dic[cur_indir.reference_number].append([cur_level,cur_indir.reference_number,cur_indir.parent_inode_number,cur_indir.logical_offset])
+    		else:
+    			block_dic[cur_indir.reference_number] = [[cur_level,cur_indir.reference_number,cur_indir.parent_inode_number,cur_indir.logical_offset]]
+
+    for _, value in block_dic.items():
+    	if len(value) > 1:
+    		for temp_block in value:
+    			print('DUPLICATE {} {} IN INODE {} AT OFFSET {}'.format(temp_block[0],temp_block[1],temp_block[2],temp_block[3]))
+
+    for temp_add in range(start_block, my_group.bid_group):
+    	if temp_add not in my_bfree and temp_add not in block_dic:
+    		my_error = True
+    		print('UNREFERENCED BLOCK {}'.format(temp_add))
 
     # =======================================================
     # Audit Inode
