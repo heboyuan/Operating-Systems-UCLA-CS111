@@ -6,4 +6,5 @@
 ##### Final Grade - A
 
 Course Syllabus - http://web.cs.ucla.edu/classes/spring18/cs111/syllabus.html
+
 Lectures and Projects - http://web.cs.ucla.edu/classes/spring18/cs111/schedule.html
