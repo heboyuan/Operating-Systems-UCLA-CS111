@@ -1,5 +1,5 @@
-# Computer Science 111
-### Operating Systems at UCLA
+# Operating Systems
+### Computer Science 111 at UCLA
 
 ##### Term - spring 2018
 ##### Professor - Kampe, M.A.
